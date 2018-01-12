@@ -30,6 +30,7 @@ function processInitialResult(error, response, body) {
   console.log('error:', error);
   console.log('statusCode:', response && response.statusCode);
 
+  console.log('Initial download started:----------------------------------------');
   console.log('startDate:', dateFormat(startDate, "yyyy.mm.dd HH:MM:ss"));
   console.log('endDate:', dateFormat(endDate, "yyyy.mm.dd HH:MM:ss"));
   console.log('window_start:', dateFormat(window_start, "yyyy.mm.dd HH:MM:ss"));
@@ -40,7 +41,7 @@ function processInitialResult(error, response, body) {
   
   //add new datasets 
   resultsTable.appendGDAXData(body);
-  console.log('result:', 'download finisched at: ' + Date.now());
+  console.log('result:', 'Initial download finisched at: ' + dateFormat(Date.now(), "yyyy.mm.dd HH:MM:ss"));
   //resultsTable.printTradeTable();
 
   if (window_end < endDate) {
@@ -53,6 +54,7 @@ function processInitialResult(error, response, body) {
     initialDownload();
   }
   else {
+    console.log('Incremental download started:----------------------------------------');
     incrementalDownload();
   }
 
@@ -62,7 +64,31 @@ function processIncrementalResult(error, response, body) {
   console.log('error:', error);
   console.log('statusCode:', response && response.statusCode);
 
-  
+  function itemFunction(item) {
+    
+    var currentTimeValue = item[0];
+    //console.log('TimeValue:', currentTimeValue);
+    var existentTimeValues = resultsTable.getColumnValues("time");
+    //console.log('existentTimeValue:', existentTimeValues);
+
+    //search currentTimeValue in existent values
+    var search = existentTimeValues.indexOf(currentTimeValue);
+    //console.log('search:', search);
+
+    //insert when not already inserted
+    if (search == -1) {
+      var array = new Array(1);
+      array[0] = item;
+      //console.log('currentTimeValue:', array);
+      resultsTable.appendGDAXData(array);   
+      counter++; 
+    }   
+  }
+
+  body = body.reverse();
+  var counter = 0;
+  body.forEach(itemFunction);
+  console.log('Incremental finished: ', counter + ' rows added');
 }
 
 
