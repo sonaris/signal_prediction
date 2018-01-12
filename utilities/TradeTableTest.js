@@ -98,15 +98,15 @@ var gdaxData3 = publicClient.getProductHistoricRates('BTC-EUR', gdaxCallback);
 
 
 //Initialize TradeTable
-var tradeTable1 = new TradeTable({name: "My Table", csvFilePath: './data/raw/training_15min_intervall_raw.csv'});
+var tradeTable1 = new TradeTable({name: "My Table", csvFilePath: './data/raw/training_15min_intervall_raw.csv', csvSeperator: "\t"});
 console.log(tradeTable1.name);
-//add gdax data
-tradeTable1.appendGDAXData(gdaxData3);
+tradeTable1.printTradeTable();
+
 //add indicator
 tradeTable1.upsert_MACDbasedIndicators("close");
 tradeTable1.upsertColumn("datetime", tradeTable1.getColumnValues("time").map(function(e) { return timestamp.toDate(e); }));
 
-//tradeTable1.printTradeTable();
+tradeTable1.printTradeTable();
 
 
 

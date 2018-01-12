@@ -28,12 +28,72 @@ class TradeTable{
 
   }
 
-  loadTableFromCSVFile(){
+  contains(array, obj) {
+    var i = array.length;
+    while (i--) {
+        if (array[i] == obj) {
+            return true;
+        }
+    }
+    return false;
+  }
+
+  loadTableFromCSVFile(seperator){
+    var seperator = this.csvSeperator;
+    var firstLine = [];
+
+    var indexTime = -1;
+    var indexLow = -1;
+    var indexHigh = -1;
+    var indexOpen = -1;
+    var indexClose = -1;
+    var indexVolume = -1;
+
+    var loadedIntervalls = [];
+
     fs.readFileSync(this.csvFilePath).toString().split('\n').forEach(function (line) { 
-      //console.log(line)
-      var lineArray = line.split("\t");
-      console.log(lineArray);
+      
+      var lineArray = line.split(seperator);
+
+      if (firstLine.length == 0){
+
+        indexTime = lineArray.indexOf("time");
+        indexLow = lineArray.indexOf("low");
+        indexHigh = lineArray.indexOf("high");
+        indexOpen = lineArray.indexOf("open");
+        indexClose = lineArray.indexOf("close");
+        indexVolume = lineArray.indexOf("volume");
+
+        //check availability needed gdax columns
+        if ((indexTime != -1) && (indexLow != -1) && (indexHigh != -1) && (indexOpen != -1) && (indexClose != -1) && (indexVolume != -1) ){
+          //continue
+          firstLine = lineArray;
+        }else{
+          throw new Error("First line of csv needs to contain: time, low, high, open, close, volume. Additional columns are possible but will not be loaded!");
+        }
+        
+      }else{
+        //add row by row to the TradeTable json object
+        if (lineArray.length >=6){
+          loadedIntervalls.push({ index: loadedIntervalls.length ,
+                                  time: Number(lineArray[indexTime]), 
+                                  low: Number(lineArray[indexLow]), 
+                                  high: Number(lineArray[indexHigh]), 
+                                  open: Number(lineArray[indexOpen]), 
+                                  close: Number(lineArray[indexClose]), 
+                                  volume: Number(lineArray[indexVolume])});
+        }
+
+        
+      }
+
     })
+
+    this.data.intervalls = loadedIntervalls;
+  }
+
+  saveTableToCSVFile(filepath){
+    console.log("function not yet implemented!");
   }
 
   printTableNameinConsole() {
@@ -166,16 +226,6 @@ class TradeTable{
       throw new Error("Column name is not available. Available columns are: " + availableKeys.toString());
     }
 
-  }
-
-  contains(array, obj) {
-    var i = array.length;
-    while (i--) {
-        if (array[i] == obj) {
-            return true;
-        }
-    }
-    return false;
   }
 
   upsertMACD_histogram(baseColumn){
