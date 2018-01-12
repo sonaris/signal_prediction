@@ -107,7 +107,7 @@ class TradeTable{
   }
 
   saveTableToCSVFile(filepath, seperator){
-    var fields = ['time', 'low', 'high','open','close','volume','datetime', 'MACD_histogram','MACD_histogram_slopePercentage','MACD_histogram_slopePercentage_extrems'];
+    var fields = ['time', 'low', 'high','open','close','volume','datetime', 'MACD_histogram','MACD_histogram_slopePercentage','MACD_histogram_extrems'];
     
     var exportIntervalls = this.data.intervalls;
 
@@ -311,13 +311,13 @@ class TradeTable{
   }
 
 
-  upsert_extrems(baseColumn){
+  upsert_extrems(baseColumn, newColumnName){
     var availableKeys = Object.keys(this.data.intervalls[0]);
 
     if (this.contains(availableKeys,baseColumn) != true){
       throw new Error("Column name is not available. Available columns are: " + availableKeys.toString());
     }else{
-      var baseColumn_extrems = baseColumn + "_extrems";
+      var baseColumn_extrems = newColumnName;
 
       this.data.intervalls[0][baseColumn_extrems] = "";
 
@@ -340,7 +340,7 @@ class TradeTable{
   upsert_MACDbasedIndicators(){
     this.upsertMACD_histogram("close");
     this.upsert_slopePercentage("MACD_histogram");
-    this.upsert_extrems("MACD_histogram_slopePercentage");
+    this.upsert_extrems("MACD_histogram_slopePercentage", "MACD_histogram_extrems");
 
   }
 

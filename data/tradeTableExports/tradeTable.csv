@@ -1,4 +1,4 @@
-"time"	"low"	"high"	"open"	"close"	"volume"	"datetime"	"MACD_histogram"	"MACD_histogram_slopePercentage"	"MACD_histogram_slopePercentage_extrems"
+"time"	"low"	"high"	"open"	"close"	"volume"	"datetime"	"MACD_histogram"	"MACD_histogram_slopePercentage"	"MACD_histogram_extrems"
 1512752400	13150	13478.99	13478.99	13285	23.766734420000112	"2017-12-08 18:00"	0	0	""
 1512753300	13250	13369.13	13285	13337.99	21.92582883000003	"2017-12-08 18:15"	0	null	
 1512754200	13250	13369.12	13337.99	13295.7	19.859693460000006	"2017-12-08 18:30"	0	null	
