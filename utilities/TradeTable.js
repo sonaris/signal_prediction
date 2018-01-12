@@ -10,6 +10,8 @@ var moment = require('moment-timezone');
 
 class TradeTable{
 
+  //##################################################################
+  //Contructor of TradeTable Class
   constructor(options) {
 
     this.name = options.name || NaN;
@@ -30,6 +32,8 @@ class TradeTable{
 
   }
 
+  //##################################################################
+  //refreshs all available indicators or adds them if not available
   refreshIndicators(){
     //upsert datetime
     this.upsertColumn("datetime", this.getColumnValues("time").map(function(e) { 
@@ -42,6 +46,8 @@ class TradeTable{
     
   }
 
+  //##################################################################
+  //Helper function to check availability of element in array
   contains(array, obj) {
     var i = array.length;
     while (i--) {
@@ -52,6 +58,8 @@ class TradeTable{
     return false;
   }
 
+  //##################################################################
+  //Loads a csv file into the intervalls array
   loadTableFromCSVFile(seperator){
     var seperator = this.csvSeperator;
     var firstLine = [];
@@ -106,6 +114,8 @@ class TradeTable{
     this.data.intervalls = loadedIntervalls;
   }
 
+  //##################################################################
+  //saves a csv file inclusing all indicators. Saving is only possible if indicators where created
   saveTableToCSVFile(filepath, seperator){
     var fields = ['time', 'low', 'high','open','close','volume','datetime', 'MACD_histogram','MACD_histogram_slopePercentage','MACD_histogram_extrems'];
     
@@ -120,14 +130,20 @@ class TradeTable{
 
   }
 
+  //##################################################################
+  //Prints the table name to the console
   printTableNameinConsole() {
     console.log(this.name);
   };
 
+  //##################################################################
+  //Returns all intervals as array
   getAllIntervalls() {
     return this.data.intervalls;
   };
 
+  //##################################################################
+  //Prints a buitified text version of the table to the console
   printTradeTable() {
     
     var columns = columnify(this.data.intervalls);
@@ -135,12 +151,16 @@ class TradeTable{
     return console.log(columns)
   }
 
+  //##################################################################
+  //Prints a json representation of the table
   getTableInteractionsJSONString() {
     var jsonPretty = stringify(this.data.metadata.tableInteractions,null,2);  
 
     console.log(jsonPretty);
   }
 
+  //##################################################################
+  //Appends GDAX data to the end of the intervalls array
   appendGDAXData(gdaxArray) {
 
     if ( gdaxArray[0].length == undefined || gdaxArray[0].length != 6){
@@ -172,6 +192,8 @@ class TradeTable{
     return this.data.intervalls;
   }
 
+  //##################################################################
+  //Appends an intervall in the object format
   appendSingleIntervall(intervall) {
     
     //insert single row
@@ -182,6 +204,8 @@ class TradeTable{
     return this.data.intervalls;
   }
 
+  //##################################################################
+  //appends multiple intervalls in the object format
   appendMultipleIntervalls(intervallArray) {
     
     
@@ -191,6 +215,8 @@ class TradeTable{
     return this.data.intervalls;
   }
 
+  //##################################################################
+  //Adds a new column. Values must be specified and length of array equal to number of rows
   upsertColumn(columnName, arrayOfValues) {
 
     if (arrayOfValues.length != this.data.intervalls.length){
@@ -204,6 +230,8 @@ class TradeTable{
     return this.data.intervalls;
   }
 
+  //##################################################################
+  //Resets the index starting with 0
   resetIndex() {
     var n = this.data.intervalls.length; 
     var index = Array.apply(null, {length: n}).map(Number.call, Number)
@@ -214,6 +242,8 @@ class TradeTable{
   }
 
 
+  //##################################################################
+  //Returns all values of a given column name
   getColumnValues(columnName) {
       
     var queryResult = jsonQuery('intervalls.'+columnName, {data: this.data}).value;
@@ -225,6 +255,8 @@ class TradeTable{
     return queryResult;
   }
 
+  //##################################################################
+  //returns the value at a given index and column name
   getValue(index, column) {
 
     var availableKeys = Object.keys(this.data.intervalls[0]);
@@ -239,6 +271,8 @@ class TradeTable{
 
   }
 
+  //##################################################################
+  //Sets the value at a given index and column name
   setValue(index, column, value) {
 
     var availableKeys = Object.keys(this.data.intervalls[0]);
@@ -252,6 +286,8 @@ class TradeTable{
 
   }
 
+  //##################################################################
+  //Upserts the MACD historgram
   upsertMACD_histogram(baseColumn){
   
     var availableKeys = Object.keys(this.data.intervalls[0]);
@@ -285,6 +321,8 @@ class TradeTable{
     
   }
 
+  //##################################################################
+  //Upsert a slopePercentage based on provided column name which will be used as the basis for calculation
   upsert_slopePercentage(baseColumn){
     var availableKeys = Object.keys(this.data.intervalls[0]);
 
@@ -311,6 +349,8 @@ class TradeTable{
   }
 
 
+  //##################################################################
+  //Upserts min, max extrems based on provided column name
   upsert_extrems(baseColumn, newColumnName){
     var availableKeys = Object.keys(this.data.intervalls[0]);
 
@@ -337,6 +377,8 @@ class TradeTable{
 
   }
 
+  //##################################################################
+  //Upserts all related MACD indicators
   upsert_MACDbasedIndicators(){
     this.upsertMACD_histogram("close");
     this.upsert_slopePercentage("MACD_histogram");
@@ -346,41 +388,5 @@ class TradeTable{
 
 }
 
+//exports the module globally to make it available for other .js files
 module.exports = TradeTable; 
-
-/** Exemplary jsonQuery queries and tests
-//Select specific value by condition
-var query1 = jsonQuery('intervalls[time=1577869].high', {data: data}).value;
-//Select specific row and value by index
-var query2 = jsonQuery('intervalls[1].time', {data: data}).value;
-//Select complete column
-var query3 = jsonQuery('intervalls.time', {data: data}).value;
-//Select rows 1 & 2
-var query4 = data.intervalls.slice(1,3);
-
- //Initialize TradeTable
-var tradeTable1 = new TradeTable("My Table");
-tradeTable1.printTableNameinConsole();
-//add gdax data
-tradeTable1.insertGDAXData([
-[1512752400,13150.0,13478.99,13478.99,13285.0,23.766734420000112],
-[1512753300,13250.0,13369.13,13285.0,13337.99,21.92582883000003],
-[1512754200,13250.0,13369.12,13337.99,13295.7,19.859693460000006],
-[1512755100,13197.23,13300.0,13295.69,13198.85,21.013139410000022],
-[1512756000,13167.7,13299.99,13198.85,13169.53,21.153042180000035]
-]);
-//add indicator
-tradeTable1.upsertColumn("MACD",[12,14,16,17,19]);
-tradeTable1.upsertColumn("datetime", tradeTable1.getColumnValues("time").map(function(e) { return timestamp.toDate(e); }));
-//access and change values
-console.log(tradeTable1.getValue(0,"time"));
-console.log(tradeTable1.setValue(0,"time",100));
-console.log(tradeTable1.getValue(0,"time"));
-
-console.log(tradeTable1.getColumnValues("MACD"));
-
-tradeTable1.resetIndex();
-//print tabular representation of table
-tradeTable1.printTradeTable();
-
-**/
