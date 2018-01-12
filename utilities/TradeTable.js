@@ -5,6 +5,8 @@ var timestamp = require('unix-timestamp');
 var MACD = require('technicalindicators').MACD;
 var fs = require('fs');
 Number.isNaN = require('is-nan');
+var json2csv = require('json2csv');
+var moment = require('moment-timezone');
 
 class TradeTable{
 
@@ -26,6 +28,18 @@ class TradeTable{
       this.loadTableFromCSVFile();
     }
 
+  }
+
+  refreshIndicators(){
+    //upsert datetime
+    this.upsertColumn("datetime", this.getColumnValues("time").map(function(e) { 
+      return moment.unix(e).tz("Europe/Berlin").format("YYYY-MM-DD HH:mm");
+    
+    }));
+    
+    //upsert indicators indicator
+    this.upsert_MACDbasedIndicators("close");
+    
   }
 
   contains(array, obj) {
@@ -92,8 +106,18 @@ class TradeTable{
     this.data.intervalls = loadedIntervalls;
   }
 
-  saveTableToCSVFile(filepath){
-    console.log("function not yet implemented!");
+  saveTableToCSVFile(filepath, seperator){
+    var fields = ['time', 'low', 'high','open','close','volume','datetime', 'MACD_histogram','MACD_histogram_slopePercentage','MACD_histogram_slopePercentage_extrems'];
+    
+    var exportIntervalls = this.data.intervalls;
+
+    var csv = json2csv({ data: exportIntervalls, fields: fields , del: seperator});
+    
+    fs.writeFile(filepath, csv, function(err) {
+      if (err) throw err;
+      console.log('file saved');
+    });
+
   }
 
   printTableNameinConsole() {

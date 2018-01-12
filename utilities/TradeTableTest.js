@@ -96,17 +96,16 @@ var gdaxData3 = publicClient.getProductHistoricRates('BTC-EUR', gdaxCallback);
 //1. MFI
 //3. Trade Klasse anfangen: Trader(TradeTable, TradeRule){}
 
-
 //Initialize TradeTable
-var tradeTable1 = new TradeTable({name: "My Table", csvFilePath: './data/raw/training_15min_intervall_raw.csv', csvSeperator: "\t"});
+var tradeTable1 = new TradeTable({name: "My Table", csvFilePath: './data/raw_gdax/training_15min_intervall_raw.csv', csvSeperator: "\t"});
 console.log(tradeTable1.name);
 tradeTable1.printTradeTable();
 
-//add indicator
-tradeTable1.upsert_MACDbasedIndicators("close");
-tradeTable1.upsertColumn("datetime", tradeTable1.getColumnValues("time").map(function(e) { return timestamp.toDate(e); }));
+tradeTable1.refreshIndicators();
 
 tradeTable1.printTradeTable();
+
+tradeTable1.saveTableToCSVFile('./data/tradeTableExports/tradeTable.csv', "\t");
 
 
 
