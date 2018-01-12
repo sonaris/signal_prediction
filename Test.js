@@ -3,6 +3,7 @@ var date = require('date-and-time');
 var request = require('request');
 var Gdax = require('gdax');
 var publicClient = new Gdax.PublicClient();
+var tradeTable = require("./utilities/TradeTable.js");
 
 
 var startDate = new Date();
@@ -21,7 +22,9 @@ var window_end = new Date(startDate.getTime());
 
 window_end = date.addDays(window_end, 3);
 
-var result = ""
+//initialize results table
+var resultsTable = new tradeTable({name: "GDAX Results"});
+
 
 function processInitialResult(error, response, body) {
   console.log('error:', error);
@@ -32,12 +35,13 @@ function processInitialResult(error, response, body) {
   console.log('window_start:', dateFormat(window_start, "yyyy.mm.dd HH:MM:ss"));
   console.log('window_end:', dateFormat(window_end, "yyyy.mm.dd HH:MM:ss"));
 
+  //reverse result to get ascending order
+  body.reverse();
+  
   //add new datasets 
-  result = body;
-
-  //print current result
-  //console.log('result:', result);
+  resultsTable.appendGDAXData(body);
   console.log('result:', 'download finisched at: ' + Date.now());
+  //resultsTable.printTradeTable();
 
   if (window_end < endDate) {
     //update dates
@@ -48,13 +52,17 @@ function processInitialResult(error, response, body) {
 
     initialDownload();
   }
-  else incrementalDownload();
+  else {
+    incrementalDownload();
+  }
 
 }
 
 function processIncrementalResult(error, response, body) {
   console.log('error:', error);
   console.log('statusCode:', response && response.statusCode);
+
+  
 }
 
 
@@ -79,8 +87,3 @@ function incrementalDownload() {
 
 
 initialDownload();
-
-
-//Execute every 5 seconds
-//setInterval(function (){ request(options, processSingleResult);}, 5000);
-
