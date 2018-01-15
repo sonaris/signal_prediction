@@ -1,0 +1,42 @@
+extends layout
+
+block content
+
+  p <b>Table Name:</b> #{TableName}
+  div
+   table(style="border-collapse: collapse; " border=1 cellpadding= 3)
+    thead
+      tr
+        th index
+        th time
+        th low
+        th high
+        th open
+        th close
+        th volume
+        th datetime
+        th macd_histogram
+        th macd_histogram_slopePercentage
+        th macd_histogram_extrems
+        th mfi
+        th rsi
+
+    tbody
+      each row in TableRows
+        tr
+          td=row.index
+          td=row.time
+          td=row.low
+          td=row.high
+          td=row.open
+          td=row.close
+          td=row.volume
+          td=row.datetime
+          td=row.macd_histogram
+          td=row.macd_histogram_slopePercentage
+          td=row.macd_histogram_extrems
+          td=row.mfi
+          td=row.rsi
+
+  
+
