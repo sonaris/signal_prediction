@@ -161,6 +161,15 @@ class TradeTable{
   }
 
   //##################################################################
+  //Prints a buitified text version of the table to the console
+  getTradeTableTXT() {
+    
+    var columns = columnify(this.data.intervalls);
+    
+    return columns;
+  }
+
+  //##################################################################
   //Prints a json representation of the table
   getTableInteractionsJSONString() {
     var jsonPretty = stringify(this.data.metadata.tableInteractions,null,2);  

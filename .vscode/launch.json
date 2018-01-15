@@ -8,7 +8,7 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}\\src\\TradeTableTest.js"
+            "program": "${workspaceFolder}\\bin\\www"
         }
     ]
 }
