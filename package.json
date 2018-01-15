@@ -23,6 +23,7 @@
     "moment": "^2.20.1",
     "moment-timezone": "^0.5.14",
     "morgan": "~1.9.0",
+    "plotly": "^1.0.6",
     "request": "^2.83.0",
     "serve-favicon": "~2.4.5",
     "technicalindicators": "^1.0.21",
