@@ -21,11 +21,17 @@ router.get('/table', function(req, res, next) {
 });
 
 router.get('/charts', function(req, res, next) {
-    
+  
+  var datetime = backtestingTradeTable.getColumnValues("datetime");
+  var budget = [];
+  var close = backtestingTradeTable.getColumnValues("close");
+  var macd_histogram = backtestingTradeTable.getColumnValues("macd_histogram");
+  var mfi = backtestingTradeTable.getColumnValues("mfi");
+  var rsi = backtestingTradeTable.getColumnValues("rsi");
 
   //res.send("Historic Data loaded from file: " + backtestingTradeTable.data.intervalls);
 
-  res.render('charts', {});
+  res.render('charts', {datetime_Array: datetime, budget_Array: budget, close_Array: close, macd_histogram_Array: macd_histogram, mfi_Array: mfi, rsi_Array: rsi});
 });
 
 module.exports = router;

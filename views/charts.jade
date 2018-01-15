@@ -2,37 +2,105 @@ extends layout
 
 block content
  
-  <div id="myDiv" style="width: 100%; height: 100%;"><!-- Plotly chart will be drawn inside this DIV --></div>
+  <div id="myDiv" ><!-- Plotly chart will be drawn inside this DIV --></div>
   script.
      
     var lineDiv = document.getElementById('myDiv');
     
-    var trace1 = {
-      x: [0, 1, 2],
-      y: [10, 11, 12],
+     
+
+    var datetime_Array = ("#{datetime_Array}").split(",");
+    var close_Array = ("#{close_Array}").split(",");
+    var macd_histogram_Array = ("#{macd_histogram_Array}").split(",");
+    var mfi_Array = ("#{mfi_Array}").split(",");
+    var rsi_Array = ("#{rsi_Array}").split(",");
+
+    //alert(datetime_Array.length);
+    //alert(close_Array.length);
+    //alert(macd_histogram_Array.length);
+    //alert(mfi_Array.length);
+    //alert(rsi_Array.length);
+    
+    var budget = {
+      x: datetime_Array,
+      y: close_Array,
       type: "scatter",
-      fill: "tonexty"
+      fill: "tonexty",
+      yaxis: "y5",
+      name:'Budget After Sell'
     };
-    var trace2 = {
-      x: [2, 3, 4],
-      y: [100, 110, 120],
-      yaxis: "y2",
-      type: "scatter"
+    var close = {
+      x: datetime_Array,
+      y: close_Array,
+      yaxis: "y4",
+      type: "scatter",
+      name:'Close Price'
     };
-    var trace3 = {
-      x: [3, 4, 5],
-      y: [1000, 1100, 1200],
+    var buy_signals = {
+      x: datetime_Array,
+      y: close_Array,
+      yaxis: "y4",
+      type: "scatter",
+      name:'Buy Signals'
+    };
+    var sell_signals = {
+      x: datetime_Array,
+      y: close_Array,
+      yaxis: "y4",
+      type: "scatter",
+      name:'Sell Signals'
+    };
+    var macd_histogram = {
+      x: datetime_Array,
+      y: macd_histogram_Array,
       yaxis: "y3",
-      type: "scatter"
+      type: "bar",
+      name:'MACD Histogram'
     };
-    var data = [trace1, trace2, trace3];
+    var mfi = {
+      x: datetime_Array,
+      y: mfi_Array,
+      yaxis: "y2",
+      type: "scatter",
+      name:'mfi'
+    };
+    var rsi = {
+      x: datetime_Array,
+      y: rsi_Array,
+      yaxis: "y1",
+      type: "scatter",
+      name:'rsi'
+    };
+
+
+    var data = [rsi, mfi, macd_histogram, sell_signals, buy_signals, close, budget];
     
     var layout = {
-      yaxis: {domain: [0, 0.33]},
-      legend: {traceorder: "reversed"},
-      yaxis2: {domain: [0.33, 0.66]},
-      yaxis3: {domain: [0.66, 1]},
-      title: "Backtesting Analysis"
+      
+      yaxis1: {
+        domain: [0, 0.13],
+        title: "rsi"
+      },
+      yaxis2: {
+        domain: [0.14, 0.27],
+        title: "mfi"
+      },
+      yaxis3: {
+        domain: [0.28, 0.42],
+        title: "macd histogram"
+      },
+      yaxis4: {
+        domain: [0.43, 0.87],
+        title: "close"
+      },
+      yaxis5: {
+        domain: [0.9, 1],
+        title: "budget"
+      },
+      title: "Backtesting Analysis",
+      autosize: false,
+      height: 900,
+      width: 1800
     };
         
 
