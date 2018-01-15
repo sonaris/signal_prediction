@@ -328,7 +328,7 @@ class TradeTable{
       
       var macd_table = MACD.calculate(macdInput);
       var histogram_shortened = jsonQuery('histogram', {data: macd_table}).value;
-      var leadingNANs = Array.apply(null, Array(inputArray.length-histogram_shortened.length)).map(Number.prototype.valueOf,NaN);
+      var leadingNANs = Array.apply(null, Array(inputArray.length-histogram_shortened.length)).map(Number.prototype.valueOf,0);
       var macd_histogram_final = leadingNANs.concat(histogram_shortened);
     
       //upsert indicator
@@ -384,7 +384,7 @@ class TradeTable{
       mfi.push (100 - (100/(1+value)));
     });
 
-    var leadingNANs = Array.apply(null, Array(this.data.intervalls.length-mfi.length)).map(Number.prototype.valueOf,NaN);
+    var leadingNANs = Array.apply(null, Array(this.data.intervalls.length-mfi.length)).map(Number.prototype.valueOf,0);
     var mfi_final = leadingNANs.concat(mfi);
   
     //upsert indicator
@@ -447,7 +447,7 @@ class TradeTable{
     //var newValues = closePrices.slice()
     //return reverseAppend(newValues, result, "rsi");
 
-    var leadingNANs = Array.apply(null, Array(closePrices.length-result.length)).map(Number.prototype.valueOf,NaN);
+    var leadingNANs = Array.apply(null, Array(closePrices.length-result.length)).map(Number.prototype.valueOf,0);
     var rsi_final = leadingNANs.concat(result);
   
     //upsert indicator

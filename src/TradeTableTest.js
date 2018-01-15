@@ -65,7 +65,7 @@ var tradeRule = {
       ]
     ],
     limitLoss : {active: false, acceptableLossInPercent: 0.05},
-    profitSafeguard : {active: false, dailyPercentageOfProfit: 0.5}
+    profitSafeguard : {active: false, dailyPercentageOfProfit: 0.3}
   }
   
   
