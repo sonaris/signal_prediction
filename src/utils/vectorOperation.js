@@ -83,7 +83,7 @@ sumVector: function (values, targetAttr)
  */
 avgVector: function (vector, targetAttr)
 {
-  var result = sumVector (vector, targetAttr);
+  var result = this.sumVector (vector, targetAttr);
   if (!vector.length)
     return 0;
   else

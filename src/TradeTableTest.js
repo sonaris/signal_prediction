@@ -64,7 +64,8 @@ var tradeRule = {
         {type: "calculationWithVariableAndComparison", column: "MFI", operator1: "-", variable: "MFI_ValueAtBuy", operator2: ">", value: 43}
       ]
     ],
-    limitLoss : {active: false, acceptableLossInPercent: 0.05}
+    limitLoss : {active: false, acceptableLossInPercent: 0.05},
+    profitSafeguard : {active: false, dailyPercentageOfProfit: 0.5}
   }
   
   

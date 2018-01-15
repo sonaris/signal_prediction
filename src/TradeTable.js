@@ -46,11 +46,12 @@ class TradeTable{
     
     }));
     
-    //upsert indicators indicator
+    //upsert indicators
     this.upsert_MACDbasedIndicators("close");
+    this.upsertMFI(14);
+    this.upsertRSI(14);
 
-    //upsert MFI
-    this.upsertMFI()
+
     
   }
 
@@ -331,9 +332,9 @@ class TradeTable{
 
   //##################################################################
   /**
-   * @description Upserts the Money-flow Index
+   * @description Upserts the Money-flow Index using period as parameter
    */
-  upsertMFI(){
+  upsertMFI(period){
     var typicalMoney = [];
     var moneyFlow = [];
     for (var i = 0; i < this.data.intervalls.length; i++)
@@ -364,8 +365,8 @@ class TradeTable{
       }
     }
 
-    var sumPosFlow = windowOperation.windowOp (posMoneyFlow, 14, vectorOperation.sumVector);
-    var sumNegFlow = windowOperation.windowOp (negMoneyFlow, 14, vectorOperation.sumVector);
+    var sumPosFlow = windowOperation.windowOp (posMoneyFlow, period, vectorOperation.sumVector);
+    var sumNegFlow = windowOperation.windowOp (negMoneyFlow, period, vectorOperation.sumVector);
     var moneyRatio = vectorOperation.divVector(sumPosFlow, sumNegFlow);
 
     var mfi = [];
@@ -381,6 +382,70 @@ class TradeTable{
     this.upsertColumn("mfi",mfi_final);
 
     return true;
+  }
+
+  //##################################################################
+  /**
+   * @description Upserts the RSI using order as parameter
+   */
+  upsertRSI(order){
+
+    var closePrices = this.getColumnValues("close");
+    
+    if (closePrices.length < order+1)
+    {
+      return [-1]; // not enough params
+    }
+    
+    var gains = [];
+    var losses = [];
+
+    for (var i = 0; i < this.data.intervalls.length-1; i++)
+    {
+      var diff = closePrices[i+1] - closePrices[i];
+      if (diff > 0) 
+      {
+        gains.push(diff);
+        losses.push(0);
+      }
+      else if (diff < 0)
+      {
+        gains.push(0);
+        losses.push(Math.abs(diff));
+      }
+      else
+      {
+        gains.push(0);
+        losses.push(0);
+      }
+    }
+    var result = [];
+    var avgGain = vectorOperation.avgVector (gains.slice(0, order));
+    var avgLoss = vectorOperation.avgVector (losses.slice (0, order));
+    var firstRS = avgGain / avgLoss;
+    result.push (100 - (100 / (1 + firstRS)));
+    
+    for (var i = order; i < closePrices.length-1; i++)
+    {
+      var partialCurrentGain = ((avgGain * (order-1)) + gains[i]) / order;
+      var partialCurrentLoss = ((avgLoss * (order-1)) + losses[i]) / order;
+      var smoothedRS = partialCurrentGain / partialCurrentLoss;
+      var currentRSI = 100 - (100 / (1 + smoothedRS))
+      result.push(currentRSI);
+      avgGain = partialCurrentGain;
+      avgLoss = partialCurrentLoss;
+    }
+    //var newValues = closePrices.slice()
+    //return reverseAppend(newValues, result, "rsi");
+
+    var leadingNANs = Array.apply(null, Array(closePrices.length-result.length)).map(Number.prototype.valueOf,NaN);
+    var rsi_final = leadingNANs.concat(result);
+  
+    //upsert indicator
+    this.upsertColumn("rsi",rsi_final);
+
+    return true;
+
   }
 
   
