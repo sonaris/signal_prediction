@@ -11,6 +11,6 @@ options = {
     results: resultsTable
 }
 
-//var downloader = new Downloader(options);
+var downloader = new downloader(options);
 
-//downloader.initialDownload();
+downloader.initialDownload();
