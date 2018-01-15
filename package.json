@@ -26,6 +26,7 @@
     "request": "^2.83.0",
     "serve-favicon": "~2.4.5",
     "technicalindicators": "^1.0.21",
+    "trendyways": "^0.4.1",
     "unix-timestamp": "^0.2.0"
   }
 }
