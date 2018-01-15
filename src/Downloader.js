@@ -26,7 +26,39 @@ class Downloader{
     this.resultsTable = options.results;
   }
 
-  
+  processInitialResult (error, response, body) {
+    console.log('error:', error);
+    console.log('statusCode:', response && response.statusCode);
+
+    console.log('Initial download started:----------------------------------------');
+    console.log('startDate:', dateFormat(this.startDate, "yyyy.mm.dd HH:MM:ss"));
+    console.log('endDate:', dateFormat(this.endDate, "yyyy.mm.dd HH:MM:ss"));
+    console.log('window_start:', dateFormat(this.window_start, "yyyy.mm.dd HH:MM:ss"));
+    console.log('window_end:', dateFormat(this.window_end, "yyyy.mm.dd HH:MM:ss"));
+
+    //reverse result to get ascending order
+    body.reverse();
+
+    //add new datasets 
+    this.resultsTable.appendGDAXData(body);
+    console.log('result:', 'Initial download finisched at: ' + dateFormat(Date.now(), "yyyy.mm.dd HH:MM:ss"));
+    //resultsTable.printTradeTable();
+
+    if (this.window_end < this.endDate) {
+      //update dates
+      this.window_start = new Date(this.window_end.getTime());
+      this.window_start = date.addSeconds(this.window_start, this.intervalLengthSeconds);
+      this.window_end = date.addSeconds(this.window_end, this.intervalLengthSeconds * this.maxIntervalls);
+      if (this.window_end > this.endDate) this.window_end = new Date(this.endDate.getTime());
+
+      this.initialDownload();
+    }
+    else {
+      console.log('Incremental download started:----------------------------------------');
+      this.incrementalDownload();
+    }
+  }
+
   processIncrementalResult(error, response, body) {
     console.log('error:', error);
     console.log('statusCode:', response && response.statusCode);
@@ -65,7 +97,7 @@ class Downloader{
         granularity: this.intervalLengthSeconds,
         start: dateFormat(this.window_start, "yyyy.mm.dd HH:MM:ss"),
         end: dateFormat(this.window_end, "yyyy.mm.dd HH:MM:ss")
-      }, processInitialResult);
+      }, this.processInitialResult);
     }, 1000);
   }
 
@@ -74,7 +106,7 @@ class Downloader{
     setInterval(function () {
       publicClient.getProductHistoricRates('BTC-EUR', {
         granularity: this.intervalLengthSeconds
-      }, processIncrementalResult);
+      }, this.processIncrementalResult);
     }, 5000);
   }
 
