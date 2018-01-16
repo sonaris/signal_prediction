@@ -1,6 +1,13 @@
-extends layout
+extends ../layout 
 
 block content
+
+  script.
+
+      $("#home").attr('class', 'nav-item');
+      $("#backtestingDropdown").attr('class', 'nav-link dropdown-toggle active');
+      $("#simulatedTradingDropdown").attr('class', 'nav-link dropdown-toggle');
+      $("#realTradingDropdown").attr('class', 'nav-link dropdown-toggle');
 
   p <b>Table Name:</b> #{TableName}
   div

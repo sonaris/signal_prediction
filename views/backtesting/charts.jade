@@ -1,10 +1,16 @@
-extends layout
+extends ../layout 
 
 block content
  
   <div id="myDiv" ><!-- Plotly chart will be drawn inside this DIV --></div>
   script.
-     
+
+    $("#home").attr('class', 'nav-item');
+    $("#backtestingDropdown").attr('class', 'nav-link dropdown-toggle active');
+    $("#simulatedTradingDropdown").attr('class', 'nav-link dropdown-toggle');
+    $("#realTradingDropdown").attr('class', 'nav-link dropdown-toggle');
+    
+
     var lineDiv = document.getElementById('myDiv');
     
      
@@ -99,7 +105,7 @@ block content
       },
       title: "Backtesting Analysis",
       autosize: false,
-      height: 900,
+      height: 850,
       width: 1800
     };
         

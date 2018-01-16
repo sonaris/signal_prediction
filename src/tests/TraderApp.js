@@ -1,5 +1,5 @@
-var tradeTable = require("./src/TradeTable.js");
-var downloader = require("./src/Downloader");
+var tradeTable = require("./../TradeTable.js");
+var downloader = require("./../Downloader.js");
 
 //initialize results table
 var resultsTable = new tradeTable({name: "GDAX Results"});

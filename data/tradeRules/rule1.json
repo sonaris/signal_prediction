@@ -1,0 +1,38 @@
+{
+    "description": "15min intervall trading rule with 70% profit on historical data set",
+    "profitSafeguard" : {"active": false, "dailyPercentageOfProfit": 0.3},
+    "buyRule": {
+      "or": [
+        {"and": [ 
+          {"type": "comparisonWithValue", "column": "macd_histogram_slopePercentage_extrems", "operator": "==", "value": "min"},
+          {"type": "comparisonWithValue", "column": "mfi", "operator": "<", "value": 30},
+          {"type": "comparisonWithValue", "column": "macd_histogram", "operator": "<", "value": 30}
+        ]},
+        {"and": [
+          {"type": "comparisonWithValue", "column": "mfi", "operator": "<", "value": 10}
+        ]},
+        {"and": [
+          {"type": "comparisonWithValue", "column": "macd_histogram", "operator": "<", "value": -100}
+        ]}
+      ]
+    },
+    "sellRule": {
+      "or": [
+        {"and": [
+          {"type": "comparisonWithValue", "column": "macd_histogram", "operator": ">", "value": 50},
+          {"type": "comparisonWithValue", "column": "macd_histogram_slopePercentage", "operator": "<", "value": 0.2},
+          {"type": "comparisonWithValue", "column": "mfi", "operator": ">", "value": 60}
+        ]},
+        {"and": [
+          {"type": "comparisonWithValue", "column": "mfi", "operator": ">=", "value": 90}
+        ]},
+        {"and": [
+          {"type": "calculationWithVariableAndComparisonWithValue", "column": "mfi", "operator1": "-", "variable": "mfi_valueAtLastBuy", "operator2": ">", "value": 43}
+        ]}
+      ],
+      "limitLoss" : {"active": false, "acceptableLossInPercent": 0.05}
+    }
+    
+    
+ 
+  }
