@@ -22,10 +22,19 @@ class Trader{
         Number.isNaN(this.tradingType) == true){
           throw new Error("Please provide all three paramters: tradeTable, tradeRule and tradingType");
     }
+
+    //variables for trade rules
+    this.mfi_valueAtLastBuy = NaN;
+    this.lastBuyPrice = NaN;
+    this.previousSignal = NaN;
   }
 
+  //##########################################################################################
+  //TRADING TYPES
+  //##########################################################################################
+
   /**
-   * @description: Performs a backtest trading based on provided TradeTable and TradeRule
+   * @description: Performs a backtest trading based on provided TradeTable and TradeRule. Adds the columns: Signal, Bitcoins, Budget, Profit
    */
   performBacktestTrading(){
     
@@ -34,11 +43,56 @@ class Trader{
     
   }
 
+  //##########################################################################################
+  //RULE EVALUATION
+  //##########################################################################################
+
   /**
-   * @description: Evaluates TradeRule based on provided rowIndex and returns "buy", "sell" or "wait"
+   * @description: Evaluates the buy rule for a given row index and returns "true" or "false"
    */
-  getSignal(rowIndex){
+  evaluateBuyRule(rowIndex){
 
   }
+
+  /**
+   * @description: Evaluates the sell rule for a given row index and returns "true" or "false"
+   */
+  evaluateSellRule(rowIndex){
+
+  }
+
+
+  //##########################################################################################
+  //COMPARISON TYPES
+  //##########################################################################################
+
+  /**
+   * @description: Evaluates a comparison rule
+   * @param: {"type": "comparisonWithValue", "column": "mfi", "operator": "<", "value": 10}
+   */
+  evaluateComparisonWithValue(comparisonObject){
+    return true;
+  }
+
+  /**
+   * @description: Evaluates a comparison rule that compares a column with a statistical value like average or median of the same column in a defined period
+   * @param: {"type": "ComparisonWithStatistic", "column": "column name", "operator": ">=", "statistic": "average or median", "period": 14}
+   */
+  evaluateComparisonWithStatistic(comparisonObject){
+    return true;
+  }
+
+  /**
+   * @description: Evaluates a calculationWithVariableAndComparison rule
+   * @param: {"type": "calculationWithVariableAndComparisonWithValue", "column": "mfi", "operator1": "-", "variable": "mfi_valueAtLastBuy", "operator2": ">", "value": 43}
+   */
+  evaluateCalculationWithVariableAndComparisonWithValue(comparisonObject){
+    return true;
+  }
+
+
+
+
+
 
 }
