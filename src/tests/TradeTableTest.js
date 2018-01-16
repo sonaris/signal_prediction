@@ -1,9 +1,12 @@
-var TradeTable = require("./TradeTable.js");
+var TradeTable = require("./../TradeTable.js");
+var Trader = require("./../Trader.js");
 var timestamp = require('unix-timestamp');
 const Gdax = require('gdax');
 const publicClient = new Gdax.PublicClient();
 var MACD = require('technicalindicators').MACD;
 var jsonQuery = require('json-query');
+var fs = require("fs");
+
 
 
 
@@ -24,13 +27,18 @@ var gdaxData1 = [
 //Initialize TradeTable
 var tradeTable1 = new TradeTable({name: "My Table", csvFilePath: './data/raw_gdax/training_15min_intervall_raw.csv', csvSeperator: "\t"});
 console.log(tradeTable1.name);
-tradeTable1.printTradeTable();
-
 tradeTable1.refreshIndicators();
-
 tradeTable1.printTradeTable();
 
-tradeTable1.saveTableToCSVFile('./data/tradeTableExports/tradeTable.csv', "\t");
+//load rule
+var jsonFile = fs.readFileSync("./data/tradeRules/rule1.json");
+var ruleObject = JSON.parse(jsonFile);
+
+var backtestingTrader = new Trader({tradeTable: tradeTable1, tradeRule: ruleObject});
+var tradedTable = backtestingTrader.performBacktestTrading(34);
+
+
+tradedTable.saveTableToCSVFile('./data/tradeTableExports/tradeTable.csv', "\t");
 
 
 

@@ -1,5 +1,6 @@
 {
     "description": "15min intervall trading rule with 70% profit on historical data set",
+    "profitSafeguard" : {"active": false, "dailyPercentageOfProfit": 0.3},
     "buyRule": {
       "or": [
         {"and": [ 
@@ -29,9 +30,9 @@
           {"type": "calculationWithVariableAndComparisonWithValue", "column": "mfi", "operator1": "-", "variable": "mfi_valueAtLastBuy", "operator2": ">", "value": 43}
         ]}
       ],
-      "limitLoss" : {"active": false, "acceptableLossInPercent": 0.05},
-      "profitSafeguard" : {"active": false, "dailyPercentageOfProfit": 0.3}
+      "limitLoss" : {"active": false, "acceptableLossInPercent": 0.05}
     }
     
     
+ 
   }
