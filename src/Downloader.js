@@ -22,7 +22,7 @@ var tradeTable = require("./TradeTable.js");
     this.window_end = date.addSeconds(this.window_end, this.intervalLengthSeconds * this.maxIntervalls);
 
     //initialize results table
-    this.resultsTable = options.results;
+    this.resultsTable = new tradeTable({name: "GDAX Results"});
 
     var self = this;
 
@@ -59,6 +59,10 @@ var tradeTable = require("./TradeTable.js");
       }
   
       return true;
+    }
+
+    this.getResultsTable = function(){
+      return self.resultsTable;
     }
   
     this.processIncrementalResult = function (error, response, body) {
@@ -113,11 +117,6 @@ var tradeTable = require("./TradeTable.js");
       }, 5000);
     }
   }
-
-  
-
-  
-
 
 //exports the module globally to make it available for other .js files
 module.exports = Downloader;
