@@ -1,0 +1,37 @@
+{
+    "description": "15min intervall trading rule with 70% profit on historical data set",
+    "buyRule": {
+      "or": [
+        [ 
+          {"type": "comparison", "column": "MACD_histogram_slopePercentage_extrems", "operator": "==", "value": "min"},
+          {"type": "comparison", "column": "MFI", "operator": "<", "value": 30},
+          {"type": "comparison", "column": "MACD_histogram", "operator": "<", "value": 30}
+        ],
+        [
+          {"type": "comparison", "column": "MFI", "operator": "<", "value": 10}
+        ],
+        [
+          {"type": "comparison", "column": "MACD_histogram", "operator": "<", "value": -100}
+        ]
+      ]
+    },
+    "sellRule": {
+      "or": [
+        [
+          {"type": "comparison", "column": "MACD_histogram", "operator": ">", "value": 50},
+          {"type": "comparison", "column": "MACD_histogram_slopePercentage", "operator": "<", "value": 0.2},
+          {"type": "comparison", "column": "MFI", "operator": ">", "value": 60}
+        ],
+        [
+          {"type": "comparison", "column": "MFI", "operator": ">=", "value": 90}
+        ],
+        [
+          {"type": "calculationWithVariableAndComparison", "column": "MFI", "operator1": "-", "variable": "MFI_ValueAtBuy", "operator2": ">", "value": 43}
+        ]
+      ],
+      "limitLoss" : {"active": false, "acceptableLossInPercent": 0.05},
+      "profitSafeguard" : {"active": false, "dailyPercentageOfProfit": 0.3}
+    }
+    
+    
+  }

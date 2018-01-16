@@ -12,15 +12,15 @@ router.get('/', function(req, res, next) {
   res.send('Backtesting routes...');
 });
 
-router.get('/table', function(req, res, next) {
+router.get('/tradeTable', function(req, res, next) {
     
 
     //res.send("Historic Data loaded from file: " + backtestingTradeTable.data.intervalls);
 
-    res.render('table', {TableName: backtestingTradeTable.name, TableRows: backtestingTradeTable.data.intervalls });
+    res.render('backtesting/table', {TableName: backtestingTradeTable.name, TableRows: backtestingTradeTable.data.intervalls });
 });
 
-router.get('/charts', function(req, res, next) {
+router.get('/visualAnalysis', function(req, res, next) {
   
   var datetime = backtestingTradeTable.getColumnValues("datetime");
   var budget = [];
@@ -31,7 +31,7 @@ router.get('/charts', function(req, res, next) {
 
   //res.send("Historic Data loaded from file: " + backtestingTradeTable.data.intervalls);
 
-  res.render('charts', {datetime_Array: datetime, budget_Array: budget, close_Array: close, macd_histogram_Array: macd_histogram, mfi_Array: mfi, rsi_Array: rsi});
+  res.render('backtesting/charts', {datetime_Array: datetime, budget_Array: budget, close_Array: close, macd_histogram_Array: macd_histogram, mfi_Array: mfi, rsi_Array: rsi});
 });
 
 module.exports = router;
