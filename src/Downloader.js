@@ -15,7 +15,6 @@ var tradeTable = require("./TradeTable.js");
     this.startDate.setSeconds(0);
 
     this.endDate = new Date();
-    this.endDate = date.addHours(this.endDate,-1);
     this.startDate.setDate(this.startDate.getDate() - options.historyLengthDays);
 
     this.window_start = new Date(this.startDate.getTime());
@@ -38,13 +37,13 @@ var tradeTable = require("./TradeTable.js");
   
       //add new datasets 
       self.resultsTable.appendGDAXData(body);
-      console.log('result:', 'Initial download finisched at: ' + dateFormat(Date.now(), "yyyy.mm.dd HH:MM:ss"));
+      console.log('result:', 'Initial download finisched at: ' + dateFormat(Date.now(), "yyyy.mm.dd HH:MM:ss", true));
       //self.resultsTable.printTradeTable();
   
       if (self.window_end < date.addSeconds(self.endDate,self.intervalLengthSeconds*-1)) {
         //update dates
         self.window_start = new Date(self.window_end.getTime());
-        self.window_start = date.addSeconds(self.window_start, self.intervalLengthSeconds);
+        self.window_start = date.addSeconds(self.window_start, 0);
         self.window_end = date.addSeconds(self.window_end, self.intervalLengthSeconds * self.maxIntervalls);
         if (self.window_end > self.endDate) {
           //find out last valid interval that can be downloaded
@@ -87,7 +86,7 @@ var tradeTable = require("./TradeTable.js");
         if (search == -1) {
           var array = new Array(1);
           array[0] = item;
-          //console.log('currentTimeValue:', array);
+          console.log('currentTimeValue:', array);
           self.resultsTable.appendGDAXData(array);
           counter++;
         }
@@ -97,25 +96,30 @@ var tradeTable = require("./TradeTable.js");
       var counter = 0;
       body.forEach(itemFunction);
       
-      console.log('Incremental finished: ', counter + ' rows added at '+ dateFormat(Date.now(), "yyyy.mm.dd HH:MM:ss"));
+      console.log('Incremental finished: ', counter + ' rows added at '+ dateFormat(Date.now(), "yyyy.mm.dd HH:MM:ss", true));
     }
 
     this.initialDownload = function() {
       console.log('Initial download started:----------------------------------------');
-      console.log('startDate:', dateFormat(self.startDate, "yyyy.mm.dd HH:MM:ss"));
-      console.log('endDate:', dateFormat(self.endDate, "yyyy.mm.dd HH:MM:ss"));
-      console.log('window_start:', dateFormat(self.window_start, "yyyy.mm.dd HH:MM:ss"));
-      console.log('window_end:', dateFormat(self.window_end, "yyyy.mm.dd HH:MM:ss"));
+      console.log('startDate:', dateFormat(self.startDate, "yyyy.mm.dd HH:MM:ss", true));
+      console.log('endDate:', dateFormat(self.endDate, "yyyy.mm.dd HH:MM:ss", true));
+      console.log('window_start:', dateFormat(self.window_start, "yyyy.mm.dd HH:MM:ss", true));
+      console.log('window_end:', dateFormat(self.window_end, "yyyy.mm.dd HH:MM:ss", true));
 
         publicClient.getProductHistoricRates('BTC-EUR', {
           granularity: self.intervalLengthSeconds,
-          start: dateFormat(self.window_start, "yyyy.mm.dd HH:MM:ss"),
-          end: dateFormat(self.window_end, "yyyy.mm.dd HH:MM:ss")
+          start: dateFormat(self.window_start, "yyyy.mm.dd HH:MM:ss", true),
+          end: dateFormat(self.window_end, "yyyy.mm.dd HH:MM:ss", true)
         }, self.processInitialResult);
     }
+
+    this.startDownload = function(callback){
+      this.initialDownload();
+    }
+
   
     this.incrementalDownload = function() {
-      //von endDate zu currentTime
+      //If current time - last entry > intervall, then donwload
       setInterval(function () {
         publicClient.getProductHistoricRates('BTC-EUR', {
           granularity: self.intervalLengthSeconds
