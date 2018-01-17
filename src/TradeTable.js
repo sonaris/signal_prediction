@@ -233,6 +233,28 @@ class TradeTable{
     return this.data.intervalls;
   }
 
+  addEmptyColumn(columnName){
+    for( var i = 0; i < this.data.intervalls.length; ++i ) {
+      this.data.intervalls[i][columnName] = NaN;
+    }
+
+    return this.data.intervalls;
+  }
+
+  getRowsByColumnCondition(columnName, condition){
+    return "TODO";
+  }
+
+  getBuyRows(){
+    var buyRows = jsonQuery('intervalls[*signal=buy]', {data: this.data});
+    return buyRows;
+  }
+
+  getSellRows(){
+    var sellRows = jsonQuery('intervalls[*signal=sell]', {data: this.data});
+    return sellRows;
+  }
+
   //##################################################################
   //Adds a new column. Values must be specified and length of array equal to number of rows
   upsertColumn(columnName, arrayOfValues) {
@@ -284,7 +306,7 @@ class TradeTable{
 
       return value;
     }else{
-      throw new Error("Column name is not available. Available columns are: " + availableKeys.toString());
+      throw new Error("Column name ["+column+"] is not available. Available columns are: " + availableKeys.toString());
     }
 
   }
@@ -299,7 +321,7 @@ class TradeTable{
       this.data.intervalls[index][column] = value;
       return this.data.intervalls[index][column];
     }else{
-      throw new Error("Column name is not available. Available columns are: " + availableKeys.toString());
+      throw new Error("Column name ["+column+"] is not available. Available columns are: " + availableKeys.toString());
     }
 
   }

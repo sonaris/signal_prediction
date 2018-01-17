@@ -39,9 +39,21 @@ class Trader{
   /**
    * @description: Performs a backtest trading based on provided TradeTable and TradeRule. Adds the columns: Signal, Bitcoins, Budget, Profit
    */
-  performBacktestTrading(startIndex){
+  performBacktestTrading(startIndex, startBudget, takerFee){
     
     var previousSignal = NaN;
+    var currentBudget = startBudget;
+    var currentBitcoins = 0;
+    var currentProfit = NaN;
+    var previousSignal = NaN;
+    var lastBudgetAtBuy =  NaN;
+
+    //add new columns
+    this.tradeTable.addEmptyColumn("signal");
+    this.tradeTable.addEmptyColumn("bitcoins");
+    this.tradeTable.addEmptyColumn("budget");
+    this.tradeTable.addEmptyColumn("profit");
+
 
     for( var i = startIndex; i < this.tradeTable.data.intervalls.length; ++i ) {
       
@@ -49,7 +61,16 @@ class Trader{
 
       //BUY
       if ((isNaN(previousSignal) || previousSignal == "sell") && this.evaluateBuyOrSellRule(i, this.buyRule)){
-        console.log("Buy Signal");
+
+        currentBudget = currentBudget * (1-takerFee);
+        lastBudgetAtBuy = currentBudget;
+        currentBitcoins = currentBudget/currentClosingPrice;
+        currentBudget = 0;
+
+        //add data to tradeTable
+        this.tradeTable.setValue(i, "signal", "buy");
+        this.tradeTable.setValue(i, "bitcoins", currentBitcoins);
+        this.tradeTable.setValue(i, "budget", currentBudget);
 
         //set historic buy values
         this.mfi_valueAtLastBuy = this.tradeTable.getValue(i,"mfi");
@@ -59,14 +80,24 @@ class Trader{
       }
       //SELL
       else if (previousSignal == "buy" && this.evaluateBuyOrSellRule(i, this.sellRule)){
-        console.log("Sell Signal");
+        
+        currentBudget = (currentBitcoins * currentClosingPrice) * (1-takerFee);
+        currentBitcoins = 0;
+        currentProfit = (currentBudget - lastBudgetAtBuy)/lastBudgetAtBuy;
+
+        //add data to tradeTable
+        this.tradeTable.setValue(i, "signal", "sell");
+        this.tradeTable.setValue(i, "bitcoins", currentBitcoins);
+        this.tradeTable.setValue(i, "budget", currentBudget);
+        this.tradeTable.setValue(i, "profit", currentProfit);
+
 
         //set historic sell values
         previousSignal = "sell";
       }
       //WAIT
       else{
-        console.log("Waiting for buy or sell signal.")
+        
       }
 
     }
@@ -101,17 +132,17 @@ class Trader{
         var currentRuleType = currentlSingleRuleObject.type;
 
         switch(currentRuleType){
-          case "comparisonWithValue":
-            andRuleEvaluationResult = this.evaluateComparisonWithValue(currentlSingleRuleObject);
-            break;
-          case "comparisonWithStatistic":
-            andRuleEvaluationResult = this.evaluateComparisonWithStatistic(currentlSingleRuleObject);
-            break;
-          case "calculationWithVariableAndComparisonWithValue":
-            andRuleEvaluationResult = this.evaluateCalculationWithVariableAndComparisonWithValue(currentlSingleRuleObject);
+          case "javascript":
+            andRuleEvaluationResult = eval(currentlSingleRuleObject.code);  
+
             break;
           default:
-            throw new Error("Rule type not known! available are: ComparisonWithValue, ComparisonWithStatistic, CalculationWithVariableAndComparisonWithValue");
+            throw new Error("Rule type not known! available are: {'type': 'javascript', 'code': 'Put your code here...'} ");
+        }
+
+        //if a single and rule is not satisfied, break the for-loop
+        if (andRuleEvaluationResult == false){
+          break;
         }
 
       }
@@ -126,58 +157,6 @@ class Trader{
     
     return overallEvaluation;
   }
-
-  //##########################################################################################
-  //COMPARISON TYPES
-  //##########################################################################################
-
-  /**
-   * @description: Evaluates a comparison rule
-   * @param: {"type": "comparisonWithValue", "column": "mfi", "operator": "<", "value": 10}
-   */
-  evaluateComparisonWithValue(singleRuleObject, rowIndex){
-    var type = singleRuleObject.type;
-    var column = singleRuleObject.column;
-    var operator = singleRuleObject.operator;
-    var value = singleRuleObject.value;
-
-
-    return true;
-  }
-
-  /**
-   * @description: Evaluates a comparison rule that compares a column with a statistical value like average or median of the same column in a defined period
-   * @param: {"type": "ComparisonWithStatistic", "column": "column name", "operator": ">=", "statistic": "average or median", "period": 14}
-   */
-  evaluateComparisonWithStatistic(singleRuleObject, rowIndex){
-    var type = singleRuleObject.type;
-    var column = singleRuleObject.column;
-    var operator = singleRuleObject.operator;
-    var statistic = singleRuleObject.statistic;
-    var period = singleRuleObject.period;
-    
-    
-    return true;
-  }
-
-  /**
-   * @description: Evaluates a calculationWithVariableAndComparison rule
-   * @param: {"type": "calculationWithVariableAndComparisonWithValue", "column": "mfi", "operator1": "-", "variable": "mfi_valueAtLastBuy", "operator2": ">", "value": 43}
-   */
-  evaluateCalculationWithVariableAndComparisonWithValue(singleRuleObject, rowIndex){
-    var type = singleRuleObject.type;
-    var column = singleRuleObject.column;
-    var operator1 = singleRuleObject.operator1;
-    var variable = singleRuleObject.variable;
-    var operator2 = singleRuleObject.operator2;
-    var value = singleRuleObject.value;
-    
-    
-    
-    return true;
-  }
-
-
 
 }
 

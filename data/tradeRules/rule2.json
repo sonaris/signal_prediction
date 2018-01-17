@@ -1,0 +1,39 @@
+{
+    "name": "15min rule 1",
+    "description": "15min intervall trading rule with 70% profit on historical data set",
+    "profitSafeguard" : {"active": false, "dailyPercentageOfProfit": 0.3},
+    "buyRule": {
+      "or": [
+        {"and": [ 
+          {"type": "javascript", "code": "this.tradeTable.getValue(rowIndex, 'macd_histogram_extrems') == 'min'"},
+          {"type": "javascript", "code": "this.tradeTable.getValue(rowIndex, 'mfi') < 30"},
+          {"type": "javascript", "code": "this.tradeTable.getValue(rowIndex, 'macd_histogram') < 30"}
+        ]},
+        {"and": [
+          {"type": "javascript", "code": "this.tradeTable.getValue(rowIndex, 'mfi') < 10"}
+        ]},
+        {"and": [
+          {"type": "javascript", "code": "this.tradeTable.getValue(rowIndex, 'macd_histogram') < -100"}
+        ]}
+      ]
+    },
+    "sellRule": {
+      "or": [
+        {"and": [
+          {"type": "javascript", "code": "this.tradeTable.getValue(rowIndex, 'macd_histogram') > 50"},
+          {"type": "javascript", "code": "this.tradeTable.getValue(rowIndex, 'macd_histogram_slopePercentage') < 0.2"},
+          {"type": "javascript", "code": "this.tradeTable.getValue(rowIndex, 'mfi') >= 60"}
+        ]},
+        {"and": [
+          {"type": "javascript", "code": "this.tradeTable.getValue(rowIndex, 'mfi') >= 90"}
+        ]},
+        {"and": [
+          {"type": "javascript", "code": "this.tradeTable.getValue(rowIndex, 'mfi') - this.mfi_valueAtLastBuy > 43"}
+        ]}
+      ],
+      "limitLoss" : {"active": false, "acceptableLossInPercent": 0.05}
+    }
+    
+    
+ 
+  }

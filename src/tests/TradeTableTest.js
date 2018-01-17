@@ -6,6 +6,7 @@ const publicClient = new Gdax.PublicClient();
 var MACD = require('technicalindicators').MACD;
 var jsonQuery = require('json-query');
 var fs = require("fs");
+var jsonQuery = require('json-query')
 
 
 
@@ -31,11 +32,16 @@ tradeTable1.refreshIndicators();
 tradeTable1.printTradeTable();
 
 //load rule
-var jsonFile = fs.readFileSync("./data/tradeRules/rule1.json");
+var jsonFile = fs.readFileSync("./data/tradeRules/rule2.json");
 var ruleObject = JSON.parse(jsonFile);
 
 var backtestingTrader = new Trader({tradeTable: tradeTable1, tradeRule: ruleObject});
-var tradedTable = backtestingTrader.performBacktestTrading(34);
+var tradedTable = backtestingTrader.performBacktestTrading(34, 100, 0.0025);
+tradedTable.printTradeTable();
+
+var buyRows = tradedTable.getBuyRows();
+var sellRows = tradedTable.getSellRows();
+
 
 
 tradedTable.saveTableToCSVFile('./data/tradeTableExports/tradeTable.csv', "\t");
