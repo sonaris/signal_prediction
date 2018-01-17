@@ -14,7 +14,8 @@ var tradeTable = require("./TradeTable.js");
     this.startDate.setMinutes(0);
     this.startDate.setSeconds(0);
 
-    this.endDate = new Date(this.startDate.getTime());
+    this.endDate = new Date();
+    this.endDate = date.addHours(this.endDate,-1);
     this.startDate.setDate(this.startDate.getDate() - options.historyLengthDays);
 
     this.window_start = new Date(this.startDate.getTime());
@@ -24,17 +25,13 @@ var tradeTable = require("./TradeTable.js");
     //initialize results table
     this.resultsTable = new tradeTable({name: "GDAX Results"});
 
+    this.readyCallback = '';
+
     var self = this;
 
     this.processInitialResult = function (error, response, body) {
       console.log('error:', error);
       console.log('statusCode:', response && response.statusCode);
-  
-      console.log('Initial download started:----------------------------------------');
-      console.log('startDate:', dateFormat(self.startDate, "yyyy.mm.dd HH:MM:ss"));
-      console.log('endDate:', dateFormat(self.endDate, "yyyy.mm.dd HH:MM:ss"));
-      console.log('window_start:', dateFormat(self.window_start, "yyyy.mm.dd HH:MM:ss"));
-      console.log('window_end:', dateFormat(self.window_end, "yyyy.mm.dd HH:MM:ss"));
   
       //reverse result to get ascending order
       body.reverse();
@@ -42,14 +39,20 @@ var tradeTable = require("./TradeTable.js");
       //add new datasets 
       self.resultsTable.appendGDAXData(body);
       console.log('result:', 'Initial download finisched at: ' + dateFormat(Date.now(), "yyyy.mm.dd HH:MM:ss"));
-      //resultsTable.printTradeTable();
+      //self.resultsTable.printTradeTable();
   
-      if (self.window_end < self.endDate) {
+      if (self.window_end < date.addSeconds(self.endDate,self.intervalLengthSeconds*-1)) {
         //update dates
         self.window_start = new Date(self.window_end.getTime());
         self.window_start = date.addSeconds(self.window_start, self.intervalLengthSeconds);
         self.window_end = date.addSeconds(self.window_end, self.intervalLengthSeconds * self.maxIntervalls);
-        if (self.window_end > self.endDate) self.window_end = new Date(self.endDate.getTime());
+        if (self.window_end > self.endDate) {
+          //find out last valid interval that can be downloaded
+          var secondsDiff = (self.endDate.getTime() - self.window_start.getTime())/1000;
+          var numIntervals = Math.floor(secondsDiff/self.intervalLengthSeconds);
+          console.log('Number of remaining intervals: ', numIntervals);
+          self.window_end = date.addSeconds(self.window_start, self.intervalLengthSeconds * (numIntervals));
+        }
   
         self.initialDownload();
       }
@@ -96,16 +99,19 @@ var tradeTable = require("./TradeTable.js");
       
       console.log('Incremental finished: ', counter + ' rows added at '+ dateFormat(Date.now(), "yyyy.mm.dd HH:MM:ss"));
     }
-  
-  
+
     this.initialDownload = function() {
-      setTimeout(function () {
+      console.log('Initial download started:----------------------------------------');
+      console.log('startDate:', dateFormat(self.startDate, "yyyy.mm.dd HH:MM:ss"));
+      console.log('endDate:', dateFormat(self.endDate, "yyyy.mm.dd HH:MM:ss"));
+      console.log('window_start:', dateFormat(self.window_start, "yyyy.mm.dd HH:MM:ss"));
+      console.log('window_end:', dateFormat(self.window_end, "yyyy.mm.dd HH:MM:ss"));
+
         publicClient.getProductHistoricRates('BTC-EUR', {
           granularity: self.intervalLengthSeconds,
           start: dateFormat(self.window_start, "yyyy.mm.dd HH:MM:ss"),
           end: dateFormat(self.window_end, "yyyy.mm.dd HH:MM:ss")
         }, self.processInitialResult);
-      }, 1000);
     }
   
     this.incrementalDownload = function() {
@@ -116,6 +122,8 @@ var tradeTable = require("./TradeTable.js");
         }, self.processIncrementalResult);
       }, 5000);
     }
+
+    
   }
 
 //exports the module globally to make it available for other .js files
