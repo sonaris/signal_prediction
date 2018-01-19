@@ -1,0 +1,27 @@
+extends ../layout 
+
+block content
+
+  script.
+
+      $("#home").attr('class', 'nav-item');
+      $("#tradeRulesDropdown").attr('class', 'nav-link dropdown-toggle');
+      $("#backtestingDropdown").attr('class', 'nav-link dropdown-toggle active');
+      $("#simulatedTradingDropdown").attr('class', 'nav-link dropdown-toggle');
+      $("#realTradingDropdown").attr('class', 'nav-link dropdown-toggle');
+
+  p <b>Table Name:</b> #{TableName}
+  div
+   table(style="border-collapse: collapse; " border=1 cellpadding= 3)
+    thead
+      tr
+        each key in Object.keys(TableRows[0])
+          th #{key}
+    tbody
+      each row in TableRows
+        tr
+          each val, index in row
+            td #{val}
+
+  
+

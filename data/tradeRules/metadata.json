@@ -1,0 +1,8 @@
+{
+    "activeRule": "rule2.json",
+    "tradeRules": [
+        {"file": "rule1.json"},
+        {"file": "rule2.json"}
+    ]
+
+}

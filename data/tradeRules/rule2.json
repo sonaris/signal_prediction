@@ -1,5 +1,5 @@
 {
-    "name": "15min rule 1",
+    "filname": "rule2.json",
     "description": "15min intervall trading rule with 70% profit on historical data set",
     "profitSafeguard" : {"active": false, "dailyPercentageOfProfit": 0.3},
     "buyRule": {
@@ -33,7 +33,4 @@
       ],
       "limitLoss" : {"active": false, "acceptableLossInPercent": 0.05}
     }
-    
-    
- 
   }

@@ -42,6 +42,11 @@ tradedTable.printTradeTable();
 var buyRows = tradedTable.getBuyRows();
 var sellRows = tradedTable.getSellRows();
 
+var datetime_column = jsonQuery('buyRows.datetime', {data: {buyRows: buyRows}}).value;
+var close_column = jsonQuery('buyRows.close', {data: {buyRows: buyRows}}).value;
+
+var datetime_column = jsonQuery('sellRows.datetime', {data: {sellRows: sellRows}}).value;
+var close_column = jsonQuery('sellRows.close', {data: {sellRows: sellRows}}).value;
 
 
 tradedTable.saveTableToCSVFile('./data/tradeTableExports/tradeTable.csv', "\t");

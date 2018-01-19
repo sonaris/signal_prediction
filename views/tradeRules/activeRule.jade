@@ -1,0 +1,20 @@
+extends ../layout 
+
+block content
+
+  script.
+
+      $("#home").attr('class', 'nav-item');
+      $("#tradeRulesDropdown").attr('class', 'nav-link dropdown-toggle active');
+      $("#backtestingDropdown").attr('class', 'nav-link dropdown-toggle');
+      $("#simulatedTradingDropdown").attr('class', 'nav-link dropdown-toggle');
+      $("#realTradingDropdown").attr('class', 'nav-link dropdown-toggle');
+
+  p <b>Trade Rules Meta Data</b> 
+  <textarea class="form-control" id="exampleFormControlTextarea1" rows="6">#{tradeRuleMetaData}</textarea>
+  <br>
+  p <b>Currently Active Rule</b>
+  <textarea class="form-control" id="exampleFormControlTextarea1" rows="20">#{activeRule}</textarea>
+
+  
+

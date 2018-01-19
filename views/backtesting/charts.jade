@@ -6,6 +6,7 @@ block content
   script.
 
     $("#home").attr('class', 'nav-item');
+    $("#tradeRulesDropdown").attr('class', 'nav-link dropdown-toggle');
     $("#backtestingDropdown").attr('class', 'nav-link dropdown-toggle active');
     $("#simulatedTradingDropdown").attr('class', 'nav-link dropdown-toggle');
     $("#realTradingDropdown").attr('class', 'nav-link dropdown-toggle');
@@ -20,20 +21,36 @@ block content
     var macd_histogram_Array = ("#{macd_histogram_Array}").split(",");
     var mfi_Array = ("#{mfi_Array}").split(",");
     var rsi_Array = ("#{rsi_Array}").split(",");
+    var buySignals_datetime_array = ("#{buySignals_datetime_array}").split(",");
+    var buySignals_close_array = ("#{buySignals_close_array}").split(",");
+    var buySignals_signal_array = ("#{buySignals_signal_array}").split(",");
+    var sellSignals_datetime_array = ("#{sellSignals_datetime_array}").split(",");
+    var sellSignals_close_array = ("#{sellSignals_close_array}").split(",");
+    var sellSignals_signal_array = ("#{sellSignals_signal_array}").split(",");
+    var sellSignals_budget_array = ("#{sellSignals_budget_array}").split(",");
+    var sellSignals_profit_array = ("#{sellSignals_profit_array}").split(",");
+    var startingBudget = "#{startingBudget}";
 
-    //alert(datetime_Array.length);
-    //alert(close_Array.length);
-    //alert(macd_histogram_Array.length);
-    //alert(mfi_Array.length);
-    //alert(rsi_Array.length);
+    var finalProfit = (sellSignals_budget_array[sellSignals_budget_array.length-1]-startingBudget)/startingBudget;
+
+    //alert(finalProfit);
+    //alert(buySignals_datetime_array.length);
+    //alert(buySignals_close_array.length);
+    //alert(buySignals_signal_array.length);
+    //alert(sellSignals_datetime_array.length);
+    //alert(sellSignals_close_array.length);
+    //alert(sellSignals_signal_array.length);
+    
     
     var budget = {
-      x: datetime_Array,
-      y: close_Array,
+      x: sellSignals_datetime_array,
+      y: sellSignals_budget_array,
       type: "scatter",
       fill: "tonexty",
-      yaxis: "y5",
-      name:'Budget After Sell'
+      yaxis: "y6",
+      name:'Budget After Sell',
+      mode: "lines+markers"
+
     };
     var close = {
       x: datetime_Array,
@@ -42,19 +59,39 @@ block content
       type: "scatter",
       name:'Close Price'
     };
+
+    var profit = {
+      x: sellSignals_datetime_array,
+      y: sellSignals_profit_array,
+      yaxis: "y5",
+      type: "bar",
+      name:'Profit'
+    };
+
     var buy_signals = {
-      x: datetime_Array,
-      y: close_Array,
+      x: buySignals_datetime_array,
+      y: buySignals_close_array,
+      mode: 'markers',
       yaxis: "y4",
-      type: "scatter",
-      name:'Buy Signals'
+      name:'Buy Signals',
+      marker: { size: 12,
+                line: {width: 1},
+                color: 'green',
+                symbol: 'triangle-up'
+      }
+      
     };
     var sell_signals = {
-      x: datetime_Array,
-      y: close_Array,
+      x: sellSignals_datetime_array,
+      y: sellSignals_close_array,
       yaxis: "y4",
-      type: "scatter",
-      name:'Sell Signals'
+      mode: 'markers',
+      name:'Sell Signals',
+      marker: { size: 12,
+                line: {width: 1},
+                color: 'red',
+                symbol: 'triangle-down'
+      }
     };
     var macd_histogram = {
       x: datetime_Array,
@@ -79,7 +116,7 @@ block content
     };
 
 
-    var data = [rsi, mfi, macd_histogram, sell_signals, buy_signals, close, budget];
+    var data = [rsi, mfi, macd_histogram, sell_signals, buy_signals, close, profit, budget];
     
     var layout = {
       
@@ -96,14 +133,18 @@ block content
         title: "macd histogram"
       },
       yaxis4: {
-        domain: [0.43, 0.87],
+        domain: [0.43, 0.80],
         title: "close"
       },
       yaxis5: {
+        domain: [0.8, 0.9],
+        title: "profit"
+      },
+      yaxis6: {
         domain: [0.9, 1],
         title: "budget"
       },
-      title: "Backtesting Analysis",
+      title: "Backtesting Analysis [Final Profit: "+finalProfit+"]",
       autosize: false,
       height: 850,
       width: 1800

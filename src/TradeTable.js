@@ -245,13 +245,21 @@ class TradeTable{
     return "TODO";
   }
 
+  /**
+   * @description: Returns a TradeTable object only containing rows with buy signal
+   */
   getBuyRows(){
-    var buyRows = jsonQuery('intervalls[*signal=buy]', {data: this.data});
+    var buyRows = jsonQuery('intervalls[*signal=buy]', {data: this.data}).value;
+
     return buyRows;
   }
 
+   /**
+   * @description: Returns a TradeTable object only containing rows with sell signal
+   */
   getSellRows(){
-    var sellRows = jsonQuery('intervalls[*signal=sell]', {data: this.data});
+    var sellRows = jsonQuery('intervalls[*signal=sell]', {data: this.data}).value;
+
     return sellRows;
   }
 

@@ -5,6 +5,7 @@ block content
   script.
 
       $("#home").attr('class', 'nav-item');
+      $("#tradeRulesDropdown").attr('class', 'nav-link dropdown-toggle');
       $("#backtestingDropdown").attr('class', 'nav-link dropdown-toggle active');
       $("#simulatedTradingDropdown").attr('class', 'nav-link dropdown-toggle');
       $("#realTradingDropdown").attr('class', 'nav-link dropdown-toggle');
@@ -27,7 +28,6 @@ block content
         th macd_histogram_extrems
         th mfi
         th rsi
-
     tbody
       each row in TableRows
         tr

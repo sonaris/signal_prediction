@@ -21,11 +21,17 @@ html
     <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
     </li>
     <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="tradeRulesDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Trade Rules</a>
+    <div class="dropdown-menu" aria-labelledby="dropdown01">
+    <a class="dropdown-item" href="/tradeRules/activeRule">Currently active Rule</a>
+    </div>
+    </li>
+    <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle" href="#" id="backtestingDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Backtesting</a>
     <div class="dropdown-menu" aria-labelledby="dropdown01">
-    <a class="dropdown-item" href="/backtesting/tradeTable">TradeTable</a>
-    <a class="dropdown-item" href="#">Trading</a>
-    <a class="dropdown-item" href="/backtesting/visualAnalysis">Visual Analysis</a>
+    <a class="dropdown-item" href="/backtesting/showTradeTable">TradeTable</a>
+    <a class="dropdown-item" href="/backtesting/runBacktesting">Trading</a>
+    <a class="dropdown-item" href="/backtesting/showVisualAnalysis">Visual Analysis</a>
     </div>
     </li>
     <li class="nav-item dropdown">
