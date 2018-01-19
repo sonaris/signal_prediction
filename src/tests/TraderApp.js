@@ -6,12 +6,16 @@ options = {
     historyLengthDays: 30,
 }
 
+var callback = function (){
+    console.log('Callback after Download');
+}
+
+//Pass trader to downloader 
+
 var downloader = new downloader(options);
 
-downloader.initialDownload();
+downloader.startDownload();
 
-//Test
-setTimeout(function () {
-    console.log(downloader.getResultsTable().getAllIntervalls());
-  }, 5000);
+
+  
 
