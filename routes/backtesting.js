@@ -6,16 +6,29 @@ var Trader = require("./../src/Trader.js");
 var jsonQuery = require('json-query');
 
 
-var backtestingTradeTable = new TradeTable({name: "Historic Data", csvFilePath: './data/raw_gdax/training_15min_intervall_raw.csv', csvSeperator: "\t"});
-console.log(backtestingTradeTable.name);
-backtestingTradeTable.refreshIndicators();
-var jsonFile = fs.readFileSync("./data/tradeRules/rule2.json");
-var startingBudget = 100;
-var ruleObject = JSON.parse(jsonFile);
+var backtestingTradeTable = NaN;
+var jsonFile = NaN;
+var startingBudget = NaN;
+var ruleObject = NaN;
 
 router.get('/', function(req, res, next) {
   //res.render('index', { title: 'Express' });
   res.send('Backtesting routes...');
+});
+
+router.get('/loadTradeTableFromCSV', function(req, res, next) {
+  backtestingTradeTable = new TradeTable({name: "Historic Data", csvFilePath: './data/raw_gdax/training_15min_intervall_raw.csv', csvSeperator: "\t"});
+  console.log(backtestingTradeTable.name);
+  backtestingTradeTable.refreshIndicators();  
+
+
+  res.render('backtesting/loadTradeTable', {Status: "Data was loaded successfully." });
+});
+
+router.get('/loadTradeTableFromGDAX_API', function(req, res, next) {
+  
+  res.send("Not implemented yet");
+  //res.render('backtesting/loadTradeTable', {Status: "Data was loaded successfully." });
 });
 
 router.get('/showTradeTable', function(req, res, next) {
@@ -23,17 +36,20 @@ router.get('/showTradeTable', function(req, res, next) {
 
     //res.send("Historic Data loaded from file: " + backtestingTradeTable.data.intervalls);
 
-    res.render('backtesting/dynamicTable', {TableName: backtestingTradeTable.name, TableRows: backtestingTradeTable.data.intervalls });
+    res.render('backtesting/showTradeTable', {TableName: backtestingTradeTable.name, TableRows: backtestingTradeTable.data.intervalls });
 });
 
 router.get('/runBacktesting', function(req, res, next) {
-    
-  var backtestingTrader = new Trader({tradeTable: backtestingTradeTable, tradeRule: ruleObject});
-  backtestingTradeTable = backtestingTrader.performBacktestTrading(34, startingBudget, 0.0025);
+  jsonFile = fs.readFileSync("./data/tradeRules/rule2.json");
+  ruleObject = JSON.parse(jsonFile);
+  startingBudget = 100;
+  
+  var trader = new Trader({tradeTable: backtestingTradeTable, tradeRule: ruleObject});
+  backtestingTradeTable = trader.performBacktestTrading(34, startingBudget, 0.0025);
   
   backtestingTradeTable.printTradeTable();
 
-  res.render('backtesting/trading', {Status: "Backtesting finished. Please open visual analysis."});
+  res.render('backtesting/tradeTradeTable', {Status: "Backtesting finished. Please open visual analysis."});
 
 });
 
@@ -61,7 +77,7 @@ router.get('/showVisualAnalysis', function(req, res, next) {
 
   //res.send("Historic Data loaded from file: " + backtestingTradeTable.data.intervalls);
 
-  res.render('backtesting/charts', {datetime_Array: datetime, 
+  res.render('backtesting/showVisualAnalysis', {datetime_Array: datetime, 
                                     budget_Array: budget, 
                                     close_Array: close, 
                                     macd_histogram_Array: macd_histogram, 
