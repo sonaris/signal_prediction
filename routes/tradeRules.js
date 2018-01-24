@@ -5,9 +5,17 @@ var TradeTable = require("./../src/TradeTable.js");
 var Trader = require("./../src/Trader.js");
 var jsonQuery = require('json-query');
 
+function checkSignIn (req, res, next){
+  if(req.session.user){
+     next();     //If session exists, proceed to page
+  } else {
+     var err = new Error("Not logged in!");
+     console.log(req.session.user);
+     next(err);  //Error, trying to access unauthorized page!
+  }
+}
 
-
-router.get('/activeRule', function(req, res, next) {
+router.get('/activeRule', checkSignIn, function(req, res, next) {
   //res.render('index', { title: 'Express' });
   //res.send('TradeRule routes...');
 

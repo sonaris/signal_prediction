@@ -6,31 +6,42 @@ var globalUser = {
   password: 'test'
 }
 
+function checkSignIn (req, res, next){
+  if(req.session.user){
+     next();     //If session exists, proceed to page
+  } else {
+     var err = new Error("Not logged in!");
+     console.log(req.session.user);
+     next(err);  //Error, trying to access unauthorized page!
+  }
+}
+
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', checkSignIn, function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
 router.get('/login', function(req, res, next) {
-
-  // render the page and pass in any flash data if it exists
+  console.log(req.session.user);
   res.render('user/login', {Status: "" }); 
 });
 
-router.post('/loginEvaluation', function(req, res, next) {
+router.post('/login', function(req, res, next) {
 
-  var username = req.body.username;
-  var password = req.body.password;
+  var currentUser = {id: req.body.username, password: req.body.password};
 
-  console.log('username: ', req.body.username);
-  console.log('password: ', req.body.password);
-
-  var evaluation = false;
-
-  if (username == globalUser.username && password == globalUser.password){
+  if (req.body.username == globalUser.username && req.body.password == globalUser.password){
+    req.session.user = currentUser;
     res.redirect('/');
   }
   else {
+    req.session.destroy(function(err) {
+      if(err) {
+        return res.redirect('/');
+      } else {
+        return res.redirect('/');
+      }
+    });
     res.render('user/login', {Status: "Wrong username or password!" }); 
   }
 
@@ -41,7 +52,16 @@ router.post('/loginEvaluation', function(req, res, next) {
 
 router.get('/logout', function(req, res, next) {
 
-  res.redirect('/');
+  if (req.session) {
+    // delete session object
+    req.session.destroy(function(err) {
+      if(err) {
+        return res.redirect('/');
+      } else {
+        return res.redirect('/');
+      }
+    });
+  }
 });
 
 module.exports = router;

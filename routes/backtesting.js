@@ -11,12 +11,22 @@ var jsonFile = NaN;
 var startingBudget = NaN;
 var ruleObject = NaN;
 
-router.get('/', function(req, res, next) {
+function checkSignIn (req, res, next){
+  if(req.session.user){
+     next();     //If session exists, proceed to page
+  } else {
+     var err = new Error("Not logged in!");
+     console.log(req.session.user);
+     next(err);  //Error, trying to access unauthorized page!
+  }
+}
+
+router.get('/', checkSignIn, function(req, res, next) {
   //res.render('index', { title: 'Express' });
   res.send('Backtesting routes...');
 });
 
-router.get('/loadTradeTableFromCSV', function(req, res, next) {
+router.get('/loadTradeTableFromCSV', checkSignIn, function(req, res, next) {
   backtestingTradeTable = new TradeTable({name: "Historic Data", csvFilePath: './data/raw_gdax/training_15min_intervall_raw.csv', csvSeperator: "\t"});
   console.log(backtestingTradeTable.name);
   backtestingTradeTable.refreshIndicators();  
@@ -25,13 +35,13 @@ router.get('/loadTradeTableFromCSV', function(req, res, next) {
   res.render('backtesting/loadTradeTable', {Status: "Data was loaded successfully." });
 });
 
-router.get('/loadTradeTableFromGDAX_API', function(req, res, next) {
+router.get('/loadTradeTableFromGDAX_API', checkSignIn, function(req, res, next) {
   
   res.send("Not implemented yet");
   //res.render('backtesting/loadTradeTable', {Status: "Data was loaded successfully." });
 });
 
-router.get('/showTradeTable', function(req, res, next) {
+router.get('/showTradeTable', checkSignIn, function(req, res, next) {
     
 
     //res.send("Historic Data loaded from file: " + backtestingTradeTable.data.intervalls);
@@ -39,7 +49,7 @@ router.get('/showTradeTable', function(req, res, next) {
     res.render('backtesting/showTradeTable', {TableName: backtestingTradeTable.name, TableRows: backtestingTradeTable.data.intervalls });
 });
 
-router.get('/runBacktesting', function(req, res, next) {
+router.get('/runBacktesting', checkSignIn, function(req, res, next) {
   jsonFile = fs.readFileSync("./data/tradeRules/rule2.json");
   ruleObject = JSON.parse(jsonFile);
   startingBudget = 100;
@@ -53,7 +63,7 @@ router.get('/runBacktesting', function(req, res, next) {
 
 });
 
-router.get('/showVisualAnalysis', function(req, res, next) {
+router.get('/showVisualAnalysis', checkSignIn, function(req, res, next) {
   
   var datetime = backtestingTradeTable.getColumnValues("datetime");
   var budget = [];
