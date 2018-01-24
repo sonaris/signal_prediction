@@ -27,25 +27,25 @@ router.get('/login', function(req, res, next) {
 });
 
 router.post('/login', function(req, res, next) {
-
+  console.log(req.body);
   var currentUser = {id: req.body.username, password: req.body.password};
 
   if (req.body.username == globalUser.username && req.body.password == globalUser.password){
-    req.session.user = currentUser;
-    res.redirect('/');
+      req.session.user = currentUser;
+      res.redirect('/');
   }
   else {
     req.session.destroy(function(err) {
       if(err) {
-        return res.redirect('/');
+        res.render('user/login', {Status: "Wrong username or password!" }); 
       } else {
-        return res.redirect('/');
+        res.render('user/login', {Status: "Wrong username or password!" }); 
       }
     });
-    res.render('user/login', {Status: "Wrong username or password!" }); 
+    
   }
 
-  console.log(globalUser);
+  //console.log(globalUser);
   // render the page and pass in any flash data if it exists
   
 });
