@@ -13,6 +13,7 @@
     "dateformat": "^3.0.2",
     "debug": "~2.6.9",
     "express": "~4.15.5",
+    "express-session": "^1.15.6",
     "gdax": "^0.5.1",
     "is-nan": "^1.2.1",
     "jade": "~1.11.0",
