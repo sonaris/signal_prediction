@@ -2,21 +2,16 @@ extends ../layout
 
 html
   head
-    meta(name='viewport', content='width=device-width, initial-scale=1')
-    title= title
-    link(rel='stylesheet', href='/css/bootstrap.css')
-    link(rel='stylesheet', href='/css/index.css')
   body
     block content
       .container
-        form.form-signin(action="/login", method="post")
+        form.form-signin(action="/login", method="post" valign="center" align ="center")
           h2.form-signin-heading Please sign in
           <br/>
           input.input-block-level(type="text", name="username", placeholder="Email address")
           <br/>
           input.input-block-level(type="password", name="password", placeholder="Password")
-          <br/>
-          <br/>
+          <br/><br/>
           button.btn.btn-large.btn-primary(type="submit") Sign in
           <br/>
           p #{Status}
