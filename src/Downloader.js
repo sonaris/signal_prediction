@@ -4,128 +4,56 @@ var request = require('request');
 var Gdax = require('gdax');
 var publicClient = new Gdax.PublicClient();
 var tradeTable = require("./TradeTable.js");
+var concat = require('array-concat');
+var timestamp = require('unix-timestamp');
 
   function Downloader(options) {
     this.intervalLengthSeconds = options.intervalLengthSeconds;
-    this.maxIntervalls = options.maxIntervallsPerDownload;
-
-    this.startDate = new Date();
-    this.startDate.setHours(0);
-    this.startDate.setMinutes(0);
-    this.startDate.setSeconds(0);
-
-    this.endDate = new Date();
-    this.startDate.setDate(this.startDate.getDate() - options.historyLengthDays);
-
-    this.window_start = new Date(this.startDate.getTime());
-    this.window_end = new Date(this.startDate.getTime());
-    this.window_end = date.addSeconds(this.window_end, this.intervalLengthSeconds * this.maxIntervalls);
-
-    //initialize results table
-    this.resultsTable = new tradeTable({name: "GDAX Results"});
-
-    this.readyCallback = '';
+    this.maxIntervals = options.maxIntervals;
+    this.maxHistoryDays = options.maxHistoryDays;
 
     var self = this;
 
-    this.processInitialResult = function (error, response, body) {
-      console.log('error:', error);
-      console.log('statusCode:', response && response.statusCode);
-  
-      //reverse result to get ascending order
-      body.reverse();
-  
-      //add new datasets 
-      self.resultsTable.appendGDAXData(body);
-      console.log('result:', 'Initial download finisched at: ' + dateFormat(Date.now(), "yyyy.mm.dd HH:MM:ss", true));
-      //self.resultsTable.printTradeTable();
-  
-      if (self.window_end < date.addSeconds(self.endDate,self.intervalLengthSeconds*-1)) {
-        //update dates
-        self.window_start = new Date(self.window_end.getTime());
-        self.window_start = date.addSeconds(self.window_start, 0);
-        self.window_end = date.addSeconds(self.window_end, self.intervalLengthSeconds * self.maxIntervalls);
-        if (self.window_end > self.endDate) {
-          //find out last valid interval that can be downloaded
-          var secondsDiff = (self.endDate.getTime() - self.window_start.getTime())/1000;
-          var numIntervals = Math.floor(secondsDiff/self.intervalLengthSeconds);
-          console.log('Number of remaining intervals: ', numIntervals);
-          self.window_end = date.addSeconds(self.window_start, self.intervalLengthSeconds * (numIntervals));
-        }
-  
-        self.initialDownload();
-      }
-      else {
-        console.log('Incremental download started:----------------------------------------');
-        self.incrementalDownload();
-      }
-  
-      return true;
-    }
-
-    this.getResultsTable = function(){
-      return self.resultsTable;
-    }
-  
-    this.processIncrementalResult = function (error, response, body) {
-      //console.log('error:', error);
-      //console.log('statusCode:', response && response.statusCode);
-  
-      function itemFunction(item) {
-  
-        var currentTimeValue = item[0];
-        //console.log('TimeValue:', currentTimeValue);
-        var existentTimeValues = self.resultsTable.getColumnValues("time");
-        //console.log('existentTimeValue:', existentTimeValues);
-  
-        //search currentTimeValue in existent values
-        var search = existentTimeValues.indexOf(currentTimeValue);
-        //console.log('search:', search);
-  
-        //insert when not already inserted
-        if (search == -1) {
-          var array = new Array(1);
-          array[0] = item;
-          console.log('currentTimeValue:', array);
-          self.resultsTable.appendGDAXData(array);
-          counter++;
-        }
-      }
-  
-      body = body.reverse();
-      var counter = 0;
-      body.forEach(itemFunction);
+    this.initialDownload = function (currentUnix, startUnix, endUnix, array, callback) {
+      console.log('startUnix: '+startUnix);
+      console.log('endUnix: '+endUnix);
+      console.log('startTime', dateFormat(timestamp.toDate(startUnix), "yyyy.mm.dd HH:MM:ss", true));
+      console.log('endTime', dateFormat(timestamp.toDate(endUnix), "yyyy.mm.dd HH:MM:ss", true));
+    
+      if( currentUnix-startUnix < 86400*self.maxHistoryDays) {
+      var startDate = Date(startUnix);
+      var endDate = Date(endUnix);
       
-      console.log('Incremental finished: ', counter + ' rows added at '+ dateFormat(Date.now(), "yyyy.mm.dd HH:MM:ss", true));
-    }
-
-    this.initialDownload = function() {
-      console.log('Initial download started:----------------------------------------');
-      console.log('startDate:', dateFormat(self.startDate, "yyyy.mm.dd HH:MM:ss", true));
-      console.log('endDate:', dateFormat(self.endDate, "yyyy.mm.dd HH:MM:ss", true));
-      console.log('window_start:', dateFormat(self.window_start, "yyyy.mm.dd HH:MM:ss", true));
-      console.log('window_end:', dateFormat(self.window_end, "yyyy.mm.dd HH:MM:ss", true));
-
-        publicClient.getProductHistoricRates('BTC-EUR', {
+      //download current window
+      publicClient.getProductHistoricRates('BTC-EUR', {
           granularity: self.intervalLengthSeconds,
-          start: dateFormat(self.window_start, "yyyy.mm.dd HH:MM:ss", true),
-          end: dateFormat(self.window_end, "yyyy.mm.dd HH:MM:ss", true)
-        }, self.processInitialResult);
+          start: dateFormat(timestamp.toDate(startUnix), "yyyy.mm.dd HH:MM:ss", true),
+          end: dateFormat(timestamp.toDate(endUnix), "yyyy.mm.dd HH:MM:ss", true)
+        }, function(error, response, body) {
+          if(error) {
+            console.log('error: '+error)
+          }
+          else {
+            array = concat(array, body);
+            self.initialDownload(currentUnix, startUnix-(self.maxIntervals*self.intervalLengthSeconds), startUnix, array, callback)
+          }
+        });
+      
     }
+    else {
+      callback(array);
+    }
+  }
 
-    this.startDownload = function(callback){
-      this.initialDownload();
-    }
+  this.startInitalDownload = function(callback){
+    var currentUnix = Math.floor(Date.now() / 1000);
+    var lastValidUnix = Math.floor(currentUnix/this.intervalLengthSeconds)*this.intervalLengthSeconds;
+    var dataArray = [];
 
-  
-    this.incrementalDownload = function() {
-      //If current time - last entry > intervall, then donwload
-      setInterval(function () {
-        publicClient.getProductHistoricRates('BTC-EUR', {
-          granularity: self.intervalLengthSeconds
-        }, self.processIncrementalResult);
-      }, 5000);
-    }
+    console.log(this.maxIntervals);
+    
+    this.initialDownload(currentUnix, lastValidUnix-(this.maxIntervals*this.intervalLengthSeconds), lastValidUnix, dataArray, callback);
+  }
 
     
   }

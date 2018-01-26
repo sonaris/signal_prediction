@@ -210,6 +210,10 @@ class TradeTable{
     return this.data.intervalls;
   }
 
+  reverseGDAXData() {
+    this.data.intervalls = this.data.intervalls.reverse();
+  }
+
   //##################################################################
   //Appends an intervall in the object format
   appendSingleIntervall(intervall) {

@@ -6,6 +6,7 @@
     "start": "nodemon ./bin/www"
   },
   "dependencies": {
+    "array-concat": "^0.1.1",
     "body-parser": "~1.18.2",
     "columnify": "^1.5.4",
     "cookie-parser": "~1.4.3",
