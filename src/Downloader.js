@@ -55,6 +55,16 @@ var timestamp = require('unix-timestamp');
     this.initialDownload(currentUnix, lastValidUnix-(this.maxIntervals*this.intervalLengthSeconds), lastValidUnix, dataArray, callback);
   }
 
+  this.startIncrementalDownload = function(callback){
+    var currentUnix = Math.floor(Date.now() / 1000);
+    var lastValidUnix = Math.floor(currentUnix/this.intervalLengthSeconds)*this.intervalLengthSeconds;
+    var dataArray = [];
+
+    console.log(this.maxIntervals);
+    
+    this.initialDownload(currentUnix, lastValidUnix-(this.maxIntervals*this.intervalLengthSeconds), lastValidUnix, dataArray, callback);
+  }
+
     
   }
 
