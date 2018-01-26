@@ -23,7 +23,7 @@ router.get('/activeRule', checkSignIn, function(req, res, next) {
 
   var activeRule = fs.readFileSync("./data/tradeRules/"+activeRuleFilename);
 
-  res.render('tradeRules/activeRule', {tradeRuleMetaData: tradeRuleMetaData, activeRule: activeRule});
+  res.render('tradeRules/activeRule', {tradeRuleMetaData: tradeRuleMetaData, activeRule: activeRule, user: req.session.user});
 });
 
 

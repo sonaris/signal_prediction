@@ -15,7 +15,7 @@ function checkSignIn (req, res, next){
   if(req.session.user){
      next();     //If session exists, proceed to page
   } else {
-     res.render('user/notLoggedIn', { title: 'Not logged in!' });
+     res.render('user/notLoggedIn', { title: 'Not logged in!'});
      next(); 
   }
 }
@@ -31,7 +31,7 @@ router.get('/loadTradeTableFromCSV', checkSignIn, function(req, res, next) {
   backtestingTradeTable.refreshIndicators();  
 
 
-  res.render('backtesting/loadTradeTable', {Status: "Data was loaded successfully." });
+  res.render('backtesting/loadTradeTable', {Status: "Data was loaded successfully.", user: req.session.user});
 });
 
 router.get('/loadTradeTableFromGDAX_API', checkSignIn, function(req, res, next) {
@@ -45,7 +45,7 @@ router.get('/showTradeTable', checkSignIn, function(req, res, next) {
 
     //res.send("Historic Data loaded from file: " + backtestingTradeTable.data.intervalls);
 
-    res.render('backtesting/showTradeTable', {TableName: backtestingTradeTable.name, TableRows: backtestingTradeTable.data.intervalls });
+    res.render('backtesting/showTradeTable', {TableName: backtestingTradeTable.name, TableRows: backtestingTradeTable.data.intervalls, user: req.session.user});
 });
 
 router.get('/runBacktesting', checkSignIn, function(req, res, next) {
@@ -58,7 +58,7 @@ router.get('/runBacktesting', checkSignIn, function(req, res, next) {
   
   backtestingTradeTable.printTradeTable();
 
-  res.render('backtesting/tradeTradeTable', {Status: "Backtesting finished. Please open visual analysis."});
+  res.render('backtesting/tradeTradeTable', {Status: "Backtesting finished. Please open visual analysis.", user: req.session.user});
 
 });
 
@@ -86,7 +86,9 @@ router.get('/showVisualAnalysis', checkSignIn, function(req, res, next) {
 
   //res.send("Historic Data loaded from file: " + backtestingTradeTable.data.intervalls);
 
-  res.render('backtesting/showVisualAnalysis', {datetime_Array: datetime, 
+  res.render('backtesting/showVisualAnalysis', {
+                                    user: req.session.user,
+                                    datetime_Array: datetime, 
                                     budget_Array: budget, 
                                     close_Array: close, 
                                     macd_histogram_Array: macd_histogram, 

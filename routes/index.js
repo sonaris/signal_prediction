@@ -12,19 +12,19 @@ function checkSignIn (req, res, next){
   if(req.session.user){
      next();     //If session exists, proceed to page
   } else {
-     res.render('user/notLoggedIn', { title: 'Not logged in!' });
+     res.render('user/notLoggedIn', { title: 'Not logged in!'});
      next(); 
   }
 }
 
 /* GET home page. */
 router.get('/', checkSignIn, function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'Express', user: req.session.user});
 });
 
 router.get('/login', function(req, res, next) {
   console.log(req.session.user);
-  res.render('user/login', {Status: "" }); 
+  res.render('user/login', {user: req.session.user}); 
 });
 
 router.post('/login', function(req, res, next) {

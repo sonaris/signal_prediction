@@ -19,57 +19,62 @@ html
     
     <div class="collapse navbar-collapse" id="navbarsExampleDefault">
     <ul class="navbar-nav mr-auto">
+    #user
+      if user
+        <li id="home" class="nav-item active">
+        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+        </li>
 
-    <li id="home" class="nav-item active">
-    <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
-    </li>
-
-    - var authorized = loggedIn
-    #authorized
-      if authorized
+    #user
+      if user
         <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="tradeRulesDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Trade Rules</a>
         <div class="dropdown-menu" aria-labelledby="dropdown01">
         <a class="dropdown-item" href="/tradeRules/activeRule">Currently active Rule</a>
         </div>
         </li>
-
-    <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="backtestingDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Backtesting</a>
-    <div class="dropdown-menu" aria-labelledby="dropdown01">
-    <a class="dropdown-item" href="/backtesting/loadTradeTableFromCSV">Load TradeTable from CSV</a>
-    <a class="dropdown-item" href="/backtesting/loadTradeTableFromGDAX_API">Load TradeTable from GDAX_API</a>
-    <a class="dropdown-item" href="/backtesting/showTradeTable">Show TradeTable</a>
-    <a class="dropdown-item" href="/backtesting/runBacktesting">Trade TradeTable</a>
-    <a class="dropdown-item" href="/backtesting/showVisualAnalysis">Show Visual Trading Analysis</a>
-    </div>
-    </li>
-
-    <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="simulatedTradingDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Simulated Trading</a>
-    <div class="dropdown-menu" aria-labelledby="dropdown01">
-    <a class="dropdown-item" href="#">TradeTable</a>
-    <a class="dropdown-item" href="#">Trading</a>
-    <a class="dropdown-item" href="#">Visual Analysis</a>
-    </div>
-    </li>
-
-    <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="realTradingDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Real Trading</a>
-    <div class="dropdown-menu" aria-labelledby="dropdown01">
-    <a class="dropdown-item" href="#">TradeTable</a>
-    <a class="dropdown-item" href="#">Trading</a>
-    <a class="dropdown-item" href="#">Visual Analysis</a>
-    </div>
-    </li>
-
-    <li id="login" class="nav-item">
-    <a class="nav-link" href="/login">Login <span class="sr-only">(current)</span></a>
-    </li>
-
-    <li id="logout" class="nav-item">
-    <a class="nav-link" href="/logout">Logout <span class="sr-only">(current)</span></a>
-    </li>
+    #user
+      if user
+        <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="backtestingDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Backtesting</a>
+        <div class="dropdown-menu" aria-labelledby="dropdown01">
+        <a class="dropdown-item" href="/backtesting/loadTradeTableFromCSV">Load TradeTable from CSV</a>
+        <a class="dropdown-item" href="/backtesting/loadTradeTableFromGDAX_API">Load TradeTable from GDAX_API</a>
+        <a class="dropdown-item" href="/backtesting/showTradeTable">Show TradeTable</a>
+        <a class="dropdown-item" href="/backtesting/runBacktesting">Trade TradeTable</a>
+        <a class="dropdown-item" href="/backtesting/showVisualAnalysis">Show Visual Trading Analysis</a>
+        </div>
+        </li>
+    #user
+      if user
+        <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="simulatedTradingDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Simulated Trading</a>
+        <div class="dropdown-menu" aria-labelledby="dropdown01">
+        <a class="dropdown-item" href="#">TradeTable</a>
+        <a class="dropdown-item" href="#">Trading</a>
+        <a class="dropdown-item" href="#">Visual Analysis</a>
+        </div>
+        </li>
+    #user
+      if user
+        <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="realTradingDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Real Trading</a>
+        <div class="dropdown-menu" aria-labelledby="dropdown01">
+        <a class="dropdown-item" href="#">TradeTable</a>
+        <a class="dropdown-item" href="#">Trading</a>
+        <a class="dropdown-item" href="#">Visual Analysis</a>
+        </div>
+        </li>
+    #user
+      if !user
+        <li id="login" class="nav-item">
+        <a class="nav-link" href="/login">Login <span class="sr-only">(current)</span></a>
+        </li>
+    #user
+      if user
+        <li id="logout" class="nav-item">
+        <a class="nav-link" href="/logout">Logout <span class="sr-only">(current)</span></a>
+        </li>
 
     </ul>
     </div>
