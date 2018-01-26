@@ -49,10 +49,7 @@ class TradeTable{
     //upsert indicators
     this.upsert_MACDbasedIndicators("close");
     this.upsertMFI(14);
-    this.upsertRSI(14);
-
-
-    
+    this.upsertRSI(14); 
   }
 
   //##################################################################

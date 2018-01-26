@@ -4,6 +4,7 @@ var router = express.Router();
 var TradeTable = require("./../src/TradeTable.js");
 var Trader = require("./../src/Trader.js");
 var jsonQuery = require('json-query');
+var Downloader = require("./../src/Downloader.js");
 
 
 var backtestingTradeTable = NaN;
@@ -35,9 +36,20 @@ router.get('/loadTradeTableFromCSV', checkSignIn, function(req, res, next) {
 });
 
 router.get('/loadTradeTableFromGDAX_API', checkSignIn, function(req, res, next) {
-  
-  res.send("Not implemented yet");
-  //res.render('backtesting/loadTradeTable', {Status: "Data was loaded successfully." });
+  backtestingTradeTable = new TradeTable({name: "GDAX Results"});;
+
+  var downloader = new Downloader({
+          intervalLengthSeconds: 900,
+          maxIntervals: 350,
+          maxHistoryDays: 30,
+  });
+
+  downloader.startInitalDownload(function(data) {
+      data = data.reverse();
+      backtestingTradeTable.appendGDAXData(data);
+      backtestingTradeTable.refreshIndicators();  
+      res.render('backtesting/loadTradeTable', {Status: "Data was loaded successfully.", user: req.session.user});
+  });
 });
 
 router.get('/showTradeTable', checkSignIn, function(req, res, next) {
