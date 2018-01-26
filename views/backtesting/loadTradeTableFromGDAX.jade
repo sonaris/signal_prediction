@@ -1,0 +1,21 @@
+extends ../layout 
+
+html
+  head
+  
+  body
+    block content
+      .main.container(style="float:left")
+        .row
+          .col-md-6.col-md-offset-3
+            h1.display-4.m-b-2 Adjust Configuration
+            form(method='post' action='/backtesting/loadTradeTableFromGDAX' )
+              div.form-group
+                label(for='email') Maximum number of past days to download
+                input.form-control(type='text' value=30 name='maxHistoryDays')
+              div.form-group
+                label(for='password') Interval length in seconds
+                input.form-control(type='text' value=900 name='intervalLengthSeconds')
+              button.btn.btn-primary(type='submit') Start Download
+              <br/>
+              p #{Status}

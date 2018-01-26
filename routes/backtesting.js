@@ -35,13 +35,17 @@ router.get('/loadTradeTableFromCSV', checkSignIn, function(req, res, next) {
   res.render('backtesting/loadTradeTable', {Status: "Data was loaded successfully.", user: req.session.user});
 });
 
-router.get('/loadTradeTableFromGDAX_API', checkSignIn, function(req, res, next) {
-  backtestingTradeTable = new TradeTable({name: "GDAX Results"});;
+router.get('/loadTradeTableFromGDAX', checkSignIn, function(req, res, next) {
+  res.render('backtesting/loadTradeTableFromGDAX', {Status: "", user: req.session.user});
+});
+
+router.post('/loadTradeTableFromGDAX', function(req, res, next) {
+  backtestingTradeTable = new TradeTable({name: "GDAX Results"});
 
   var downloader = new Downloader({
-          intervalLengthSeconds: 900,
+          intervalLengthSeconds: req.body.intervalLengthSeconds,
           maxIntervals: 350,
-          maxHistoryDays: 30,
+          maxHistoryDays: req.body.maxHistoryDays,
   });
 
   downloader.startInitalDownload(function(data) {
@@ -50,13 +54,12 @@ router.get('/loadTradeTableFromGDAX_API', checkSignIn, function(req, res, next) 
       backtestingTradeTable.refreshIndicators();  
       res.render('backtesting/loadTradeTable', {Status: "Data was loaded successfully.", user: req.session.user});
   });
+  //res.render('backtesting/loadTradeTableFromGDAX', {Status: "Download started", user: req.session.user});
+
 });
 
 router.get('/showTradeTable', checkSignIn, function(req, res, next) {
-    
-
     //res.send("Historic Data loaded from file: " + backtestingTradeTable.data.intervalls);
-
     res.render('backtesting/showTradeTable', {TableName: backtestingTradeTable.name, TableRows: backtestingTradeTable.data.intervalls, user: req.session.user});
 });
 
