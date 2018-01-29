@@ -9,6 +9,7 @@ var bodyParser = require('body-parser');
 var index = require('./routes/index');
 var users = require('./routes/users');
 var backtesting = require('./routes/backtesting');
+var simulation = require('./routes/simulation');
 var tradeRules = require('./routes/tradeRules');
 
 var app = express();
@@ -35,7 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 app.use('/users', users);
 app.use('/backtesting', backtesting);
-//app.use('/simulation', simulation);
+app.use('/simulation', simulation);
 app.use('/tradeRules', tradeRules);
 
 // catch 404 and forward to error handler

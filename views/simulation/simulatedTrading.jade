@@ -1,21 +1,37 @@
 extends ../layout 
 
+
+
+
+
 html
   head
   
   body
     block content
+      script.
+        var something = function() {
+          console.log('something');
+          setInterval(function(){
+            $.get( "/simulation/getUpdate", function( data ) {
+              $("#statusArea").val(data.Test);
+              //alert( data.Test );
+            });
+        }, 1000);
+        }
       .main.container(style="float:left")
         .row
           .col-md-6.col-md-offset-3
             h1.display-4.m-b-2 Adjust Configuration
-            form(method='post' action='/backtesting/loadTradeTableFromGDAX' )
+            form(method='post' action='/simulation/startSimulatedTrading' )
               div.form-group
                 label(for='maxHistoryDays') Maximum number of past days to download
-                input.form-control(type='text' value=30 name='maxHistoryDays')
+                input.form-control(type='text' value=10 name='maxHistoryDays')
               div.form-group
                 label(for='intervalLengthSeconds') Interval length in seconds
                 input.form-control(type='text' value=900 name='intervalLengthSeconds')
               button.btn.btn-primary(type='submit') Start Download
               <br/>
               p #{Status}
+        textarea(rows="10" cols="60" id="statusArea" name="statusArea")
+        button(onclick='something()') Click

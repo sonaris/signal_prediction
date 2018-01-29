@@ -6,6 +6,7 @@ var publicClient = new Gdax.PublicClient();
 var tradeTable = require("./TradeTable.js");
 var concat = require('array-concat');
 var timestamp = require('unix-timestamp');
+var Repeat = require('repeat');
 
   function Downloader(options) {
     this.intervalLengthSeconds = options.intervalLengthSeconds;
@@ -47,22 +48,63 @@ var timestamp = require('unix-timestamp');
 
   this.startInitalDownload = function(callback){
     var currentUnix = Math.floor(Date.now() / 1000);
-    var lastValidUnix = Math.floor(currentUnix/this.intervalLengthSeconds)*this.intervalLengthSeconds;
+    var lastValidUnix = (Math.floor(currentUnix/this.intervalLengthSeconds)*this.intervalLengthSeconds);
+    lastValidUnix = lastValidUnix + this.intervalLengthSeconds*1;
+
     var dataArray = [];
 
-    console.log(this.maxIntervals);
+    console.log('Max Intervals:' ,this.maxIntervals);
+    console.log('lastValidUnix:' ,lastValidUnix);
     
     this.initialDownload(currentUnix, lastValidUnix-(this.maxIntervals*this.intervalLengthSeconds), lastValidUnix, dataArray, callback);
   }
 
-  this.startIncrementalDownload = function(callback){
-    var currentUnix = Math.floor(Date.now() / 1000);
-    var lastValidUnix = Math.floor(currentUnix/this.intervalLengthSeconds)*this.intervalLengthSeconds;
+  this.startIncrementalDownload = function(tradeTable, callback){
+    
     var dataArray = [];
 
-    console.log(this.maxIntervals);
+    var dataArray = tradeTable.getAllIntervalls();
+
+    function printElement() {
+      var currentUnix = Math.floor(Date.now() / 1000);
+      //var lastValidUnix = Math.floor(currentUnix/this.intervalLengthSeconds)*this.intervalLengthSeconds;
+
+      var dataArray = tradeTable.getAllIntervalls();
+      var latestInterval = dataArray[dataArray.length-1].time;
+
+      if (currentUnix-latestInterval > self.intervalLengthSeconds){
+        
+        console.log('Next Interval Download Possible');
+
+        console.log('Current Time: ', currentUnix);
+        console.log('Latest Interval: ', latestInterval);
+        console.log('Current Time Dif in Seconds: ', currentUnix-latestInterval);
+
+        //download current window
+        publicClient.getProductHistoricRates('BTC-EUR', {
+          granularity: self.intervalLengthSeconds,
+          start: dateFormat(timestamp.toDate(latestInterval), "yyyy.mm.dd HH:MM:ss", true),
+          end: dateFormat(timestamp.toDate(currentUnix+self.intervalLengthSeconds*1), "yyyy.mm.dd HH:MM:ss", true)
+        }, function(error, response, body) {
+          if(error) {
+            console.log('error: '+error)
+          }
+          else {
+            callback(body);
+            
+          }
+        });
+
+      }
+      else {
+        console.log('Stil need to wait for next download');
+        console.log('Current Time Dif in Seconds: ', currentUnix-latestInterval);
+      } 
+    }
+     
+    Repeat(printElement).every(1000, 'ms').start.in(0, 'sec');
+
     
-    this.initialDownload(currentUnix, lastValidUnix-(this.maxIntervals*this.intervalLengthSeconds), lastValidUnix, dataArray, callback);
   }
 
     
