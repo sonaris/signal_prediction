@@ -59,13 +59,13 @@ var Repeat = require('repeat');
     this.initialDownload(currentUnix, lastValidUnix-(this.maxIntervals*this.intervalLengthSeconds), lastValidUnix, dataArray, callback);
   }
 
-  this.startIncrementalDownload = function(tradeTable, callback){
+  this.startIncrementalDownload = function(tradeTable, callbackInsert, callbackWait){
     
     var dataArray = [];
 
     var dataArray = tradeTable.getAllIntervalls();
 
-    function printElement() {
+    function tryDownload() {
       var currentUnix = Math.floor(Date.now() / 1000);
       //var lastValidUnix = Math.floor(currentUnix/this.intervalLengthSeconds)*this.intervalLengthSeconds;
 
@@ -75,7 +75,6 @@ var Repeat = require('repeat');
       if (currentUnix-latestInterval > self.intervalLengthSeconds){
         
         console.log('Next Interval Download Possible');
-
         console.log('Current Time: ', currentUnix);
         console.log('Latest Interval: ', latestInterval);
         console.log('Current Time Dif in Seconds: ', currentUnix-latestInterval);
@@ -84,27 +83,28 @@ var Repeat = require('repeat');
         publicClient.getProductHistoricRates('BTC-EUR', {
           granularity: self.intervalLengthSeconds,
           start: dateFormat(timestamp.toDate(latestInterval), "yyyy.mm.dd HH:MM:ss", true),
-          end: dateFormat(timestamp.toDate(currentUnix+self.intervalLengthSeconds*1), "yyyy.mm.dd HH:MM:ss", true)
+          end: dateFormat(timestamp.toDate(latestInterval+self.intervalLengthSeconds*1), "yyyy.mm.dd HH:MM:ss", true)
         }, function(error, response, body) {
           if(error) {
             console.log('error: '+error)
           }
           else {
-            callback(body);
+            callbackInsert(body);
             
           }
         });
 
       }
       else {
-        console.log('Stil need to wait for next download');
-        console.log('Current Time Dif in Seconds: ', currentUnix-latestInterval);
+        var part1 = self.intervalLengthSeconds*1;
+        var part2 = currentUnix-latestInterval;
+        console.log("Next download in "+(part1-part2)+" seconds");
+        callbackWait("Next download in "+(part1-part2)+" seconds");
       } 
     }
      
-    Repeat(printElement).every(1000, 'ms').start.in(0, 'sec');
-
-    
+    Repeat(tryDownload).every(1000, 'ms').start.in(0, 'sec');
+ 
   }
 
     

@@ -10,15 +10,60 @@ html
   body
     block content
       script.
-        var something = function() {
-          console.log('something');
-          setInterval(function(){
-            $.get( "/simulation/getUpdate", function( data ) {
-              $("#statusArea").val(data.Test);
+        setInterval(function(){
+            $.get( "/simulation/getStatusUpdate", function(data) {
+              var dataNew = data.reverse();
+              $("#statusArea").val("");
+              dataNew.forEach(function(entry) {
+                  $("#statusArea").val($("#statusArea").val()+entry+"\n");
+              });
+              
               //alert( data.Test );
             });
         }, 1000);
-        }
+        var refreshTable = function(){
+            $.get( "/simulation/getTradeTable", function(data) {
+              //alert(data);
+              $.each(data, function(i, item) {
+                  //alert(item);
+                  t.row.add( [
+                      item.index,
+                      item.time,
+                      item.datetime,
+                      item.low,
+                      item.high,
+                      item.open,
+                      item.close,
+                      item.volume,
+                      item.macd_histogram,
+                      item.macd_histogram_slopePercentage,
+                      item.index,
+                      item.mfi,
+                      item.rsi
+                  ] ).draw( false );
+              });  
+            }); 
+        };
+        var t = '';
+        $(document).ready(function() {
+            t = $('#simulationTradeTable').DataTable( {
+                columns: [
+                    { title: "index" },
+                    { title: "time" },
+                    { title: "datetime" },
+                    { title: "low." },
+                    { title: "high" },
+                    { title: "open" },
+                    { title: "close" },
+                    { title: "volume" },
+                    { title: "macd_histogram" },
+                    { title: "macd_histogram_slopePercentage" },
+                    { title: "macd_histogram_extrems" },
+                    { title: "mfi" },
+                    { title: "rsi" }
+                ]
+            } );
+        } );
       .main.container(style="float:left")
         .row
           .col-md-6.col-md-offset-3
@@ -30,8 +75,12 @@ html
               div.form-group
                 label(for='intervalLengthSeconds') Interval length in seconds
                 input.form-control(type='text' value=900 name='intervalLengthSeconds')
-              button.btn.btn-primary(type='submit') Start Download
+              button.btn.btn-primary(type='submit') Start Simulation
               <br/>
               p #{Status}
-        textarea(rows="10" cols="60" id="statusArea" name="statusArea")
-        button(onclick='something()') Click
+          .col-md-6.col-md-offset-3
+            h1.display-4.m-b-2 Simulation Status
+            textarea(style="float:left" rows="10" cols="60" id="statusArea" name="statusArea")
+        .row
+          button(onclick='refreshTable()') Refresh Trade Table
+          <table id="simulationTradeTable" class="display" cellspacing="0" width="100%">
