@@ -9,7 +9,7 @@ var timestamp = require('unix-timestamp');
 var Downloader = require("./../src/Downloader.js");
 
 
-var simulationTradeTable = new TradeTable({name: "GDAX Results"});;
+var simulationTradeTable = new TradeTable({name: "GDAX Results"});
 var jsonFile = NaN;
 var startingBudget = NaN;
 var ruleObject = NaN;
@@ -40,9 +40,11 @@ router.get('/simulatedTrading', checkSignIn, function(req, res, next) {
   res.render('simulation/simulatedTrading', {Status: "", user: req.session.user});
 });
 
-router.post('/startSimulatedTrading', function(req, res, next) {
-  //simulationTradeTable = new TradeTable({name: "GDAX Results"});
+router.post('/resetSimulatedTrading', function(req, res, next) {
+  simulationTradeTable = new TradeTable({name: "GDAX Results"});
+});
 
+router.post('/startSimulatedTrading', function(req, res, next) {
   var downloader = new Downloader({
           intervalLengthSeconds: req.body.intervalLengthSeconds,
           maxIntervals: 350,
@@ -55,13 +57,11 @@ router.post('/startSimulatedTrading', function(req, res, next) {
       data = data.reverse();
       simulationTradeTable.appendGDAXData(data);
       simulationTradeTable.refreshIndicators();  
-      //res.render('simulation/simulatedTrading', {Status: "", user: req.session.user});
-
-      //simulationTradeTable.printTradeTable();
+      simulationTradeTable.printTradeTable();
 
       addLogEntry("Incremental download started...");
 
-      downloader.startIncrementalDownload(simulationTradeTable, function(data) {
+      downloader.startIncrementalDownload(simulationTradeTable, function(data) {       
         console.log('Newly downloaded interval: '+data);
         addLogEntry('Newly downloaded interval: '+data);
         simulationTradeTable.appendGDAXData(data);

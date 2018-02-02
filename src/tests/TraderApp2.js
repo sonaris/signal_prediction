@@ -4,18 +4,22 @@ var tradeTable = require("../TradeTable.js");
 var downloader = require("./../Downloader.js");
 
  
-var tradeTable = new tradeTable({name: "GDAX Results"});;
+publicClient.getProductTicker('BTC-EUR', function(error, response, body) {
+    if(error) {
+      console.log('error: '+error)
+    }
+    else {
+      //console.log(body);
 
-var downloader = new downloader({
-        intervalLengthSeconds: 900,
-        maxIntervals: 350,
-        maxHistoryDays: 30,
-});
+      //[time, low, high, open, close, volume]
+      var currentUnix = Math.floor(Date.now() / 1000);
 
-downloader.startInitalDownload(function(data) {
-    data = data.reverse();
-    tradeTable.appendGDAXData(data);
-    tradeTable.printTradeTable();
-});
+      var test = [ 
+        [currentUnix, 0, 0, 0, body.price, 0]
+      ];
 
+      console.log(test);
+      
+    }
+  });
 

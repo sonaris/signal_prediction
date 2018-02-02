@@ -9,9 +9,9 @@ var timestamp = require('unix-timestamp');
 var Repeat = require('repeat');
 
   function Downloader(options) {
-    this.intervalLengthSeconds = options.intervalLengthSeconds;
-    this.maxIntervals = options.maxIntervals;
-    this.maxHistoryDays = options.maxHistoryDays;
+    this.intervalLengthSeconds = options.intervalLengthSeconds*1;
+    this.maxIntervals = options.maxIntervals*1;
+    this.maxHistoryDays = options.maxHistoryDays*1;
 
     var self = this;
 
@@ -72,7 +72,7 @@ var Repeat = require('repeat');
       var dataArray = tradeTable.getAllIntervalls();
       var latestInterval = dataArray[dataArray.length-1].time;
 
-      if (currentUnix-latestInterval > self.intervalLengthSeconds){
+      if (currentUnix-latestInterval >= self.intervalLengthSeconds){
         
         console.log('Next Interval Download Possible');
         console.log('Current Time: ', currentUnix);
@@ -80,16 +80,15 @@ var Repeat = require('repeat');
         console.log('Current Time Dif in Seconds: ', currentUnix-latestInterval);
 
         //download current window
-        publicClient.getProductHistoricRates('BTC-EUR', {
-          granularity: self.intervalLengthSeconds,
-          start: dateFormat(timestamp.toDate(latestInterval), "yyyy.mm.dd HH:MM:ss", true),
-          end: dateFormat(timestamp.toDate(latestInterval+self.intervalLengthSeconds*1), "yyyy.mm.dd HH:MM:ss", true)
-        }, function(error, response, body) {
+        publicClient.getProductTicker('BTC-EUR', function(error, response, body) {
           if(error) {
             console.log('error: '+error)
           }
           else {
-            callbackInsert(body);
+            var entry = [ 
+              [latestInterval+self.intervalLengthSeconds, 0, 0, 0, body.price, 0]
+            ];
+            callbackInsert(entry);
             
           }
         });
